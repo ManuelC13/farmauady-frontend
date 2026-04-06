@@ -1,12 +1,17 @@
-import './App.css'
+import { Routes, Route } from "react-router-dom";
+import Login from "./pages/auth/Login"
+import ForgotPassword from "./pages/auth/ForgoutPassword"
+import ResetPassword from "./pages/auth/ResetPassword"
 
 function App() {
   return (
-    <div className="p-10">
-      <h1 className="text-4xl font-bold text-red-500">
-        FarmaUady
-      </h1>
-    </div>
+    <Routes>
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+
+      {/* Ruta principal de la aplicación */}
+      <Route path="/login" element={<Login />} />
+    </Routes>
   );
 }
 
