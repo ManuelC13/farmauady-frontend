@@ -1,23 +1,25 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/Login"
 import ForgotPassword from "./pages/auth/ForgotPassword"
 import ResetPassword from "./pages/auth/ResetPassword"
 import Dashboard from "./pages/administrator/Dashboard";
 import Users from "./pages/administrator/Users";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
     <Routes>
+      {/* Redirige la raíz al login */}
+      <Route path="/" element={<Navigate to="/login" replace />} />
+
+      {/* Rutas públicas */}
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
-      {/* Administrador */}
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/users" element={<Users />} />
-
-      {/* Ruta principal de la aplicación */}
-      <Route path="/login" element={<Login />} />
+      {/* Rutas protegidas del Administrador */}
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
     </Routes>
   );
 }

@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import {
   LayoutDashboard,
   Users,
@@ -12,6 +13,13 @@ import {
 
 function Sidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   const menu = [
     { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -75,7 +83,10 @@ function Sidebar() {
 
       {/* Bottom */}
       <div className="p-4">
-        <button className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-blue-600">
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        >
           <LogOut size={20} />
           Cerrar sesión
         </button>

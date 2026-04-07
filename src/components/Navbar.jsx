@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const location = useLocation();
@@ -10,8 +11,8 @@ function Navbar() {
 
   const page = routes[location.pathname] || "";
 
-  // Hay que cambiar por el contexto del rol real del usuario
-  const userRole = "Administrador";
+  const { user } = useAuth();
+  const userRole = user?.role || "Administrador";
 
   const title = `${userRole} / ${page}`;
 
@@ -24,7 +25,7 @@ function Navbar() {
 
       <div className="flex items-center gap-5 cursor-pointer">
         <div className="text-sm text-right">
-            <p className="font-medium text-gray-700">Manuel Cupul</p>  {/* Hay que cambiar por el nombre real del usuario */}
+            <p className="font-medium text-gray-700">{user?.name || "Usuario"}</p>
             <p className="font-medium text-primary text-xs">{userRole}</p>
         </div>
 
