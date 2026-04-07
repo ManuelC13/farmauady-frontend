@@ -8,7 +8,7 @@ import LoginImg from "../../assets/login_image.webp";
 
 const Login = () => {
 
-    const { signin, isAuthenticated } = useAuth();
+    const { user, signin, isAuthenticated } = useAuth();
     const navigate = useNavigate();
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState(null);
@@ -23,10 +23,14 @@ const Login = () => {
     };
 
     useEffect(() => {
-        if (isAuthenticated) {
-            navigate("/dashboard");
+        if (isAuthenticated && user) {
+            if (user.role === "Vendedor") {
+                navigate("/vendedor/dashboard");
+            } else {
+                navigate("/dashboard");
+            }
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

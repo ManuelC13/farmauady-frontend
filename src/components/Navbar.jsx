@@ -7,20 +7,21 @@ function Navbar() {
   const routes = {
     "/dashboard": "Dashboard",
     "/users": "Gestión de usuarios",
+    "/vendedor/dashboard": "Dashboard",
+    "/vendedor/register-sale": "Registro de ventas",
+    "/vendedor/products": "Productos",
   };
 
   const page = routes[location.pathname] || "";
 
   const { user } = useAuth();
   const userRole = user?.role || "Administrador";
-
-  const title = `${userRole} / ${page}`;
-
+  
   return (
     <div className="w-full h-16 bg-white flex items-center justify-between px-6 shadow-sm">
       
       <h1 className="text-md font-semibold text-gray-700">
-        {title}
+        {userRole} / <span className="text-primary">{page}</span>
       </h1>
 
       <div className="flex items-center gap-5 cursor-pointer">
