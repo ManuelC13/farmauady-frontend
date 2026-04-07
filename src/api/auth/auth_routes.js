@@ -9,6 +9,9 @@ export const logoutRequest = () =>
 export const refreshTokenRequest = () =>
     api.post("/auth/refresh");
 
+export const verifyRequest = () =>
+    api.get("/auth/verify");
+
 export const forgotPasswordRequest = (email) =>
     api.post("/auth/forgot-password", { email });
 
