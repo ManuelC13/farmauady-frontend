@@ -30,7 +30,7 @@ function Sidebar() {
   ];
 
   return (
-    <div className="w-64 h-screen bg-blue-700 text-white flex flex-col justify-between">
+    <div className="w-64 h-screen bg-primary text-white flex flex-col justify-between">
       
       {/* Top */}
       <div>
@@ -56,8 +56,8 @@ function Sidebar() {
                 className={`flex items-center gap-3 px-4 py-2 rounded-lg transition
                   ${
                     isActive
-                      ? "bg-blue-800"
-                      : "hover:bg-blue-600"
+                      ? "bg-secondary"
+                      : "hover:bg-secondary/50"
                   }`}
               >
                 <Icon size={20} />
@@ -73,7 +73,7 @@ function Sidebar() {
         <div className="p-4">
           <Link
             to="/profile"
-            className="flex items-center gap-3 px-6 py-2 rounded-lg hover:bg-blue-600"
+            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-secondary/50"
           >
             <User size={20} />
             Mi perfil
@@ -85,7 +85,7 @@ function Sidebar() {
       <div className="p-4">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-secondary/50 transition"
         >
           <LogOut size={20} />
           Cerrar sesión
