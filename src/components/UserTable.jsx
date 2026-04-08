@@ -2,12 +2,12 @@ import { SquarePen, Trash2, ShieldCheck } from "lucide-react";
 
 function UserTable({ users, onEdit, onDelete }) {
   return (
-    <div className="bg-background rounded-xl overflow-hidden shadow border border-gray-300">
+    <div className="bg-background overflow-hidden rounded-b-xl">
       <table className="w-full text-left">
 
         {/* Header */}
         <thead>
-          <tr className="border-b border-gray-200">
+          <tr className="border-b border-gray-300">
             <th className="py-4 px-6 text-sm font-semibold text-gray-800">Usuario</th>
             <th className="py-4 px-4 text-sm font-semibold text-gray-800">Rol</th>
             <th className="py-4 px-4 text-sm font-semibold text-gray-800">Correo electrónico</th>
@@ -31,7 +31,7 @@ function UserTable({ users, onEdit, onDelete }) {
                 {/* Usuario */}
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-sm font-semibold flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-md font-semibold flex-shrink-0">
                       {user.first_name?.[0]?.toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-gray-800">
@@ -76,17 +76,17 @@ function UserTable({ users, onEdit, onDelete }) {
                 <td className="py-4 px-6 text-right">
                   <button
                     onClick={() => onEdit(user)}
-                    className="p-2 rounded-lg hover:bg-secondary/10 text-primary transition"
+                    className="p-2 rounded-lg hover:bg-secondary/10 text-primary transition cursor-pointer"
                     title="Editar usuario"
                   >
-                    <SquarePen size={20} />
+                    <SquarePen size={22} />
                   </button>
                   <button
                     onClick={() => onDelete(user)}
-                    className="p-2 rounded-lg hover:bg-danger/10 text-danger transition"
+                    className="p-2 rounded-lg hover:bg-danger/10 text-danger transition cursor-pointer"
                     title="Eliminar usuario"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={22} />
                   </button>
                 </td>
 

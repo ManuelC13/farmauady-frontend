@@ -5,10 +5,11 @@ import UserModal from "../../components/UserModal";
 import ConfirmModal from "../../components/ConfirmModal";
 import { useEffect, useState } from "react";
 import { createUserRequest, getUsersRequest, deleteUserRequest, updateUserRequest } from "../../api/user/user_routes";
-import { Plus } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 
 function Users() {
   const [users, setUsers] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
@@ -22,6 +23,14 @@ function Users() {
   useEffect(() => {
     loadUsers();
   }, []);
+
+  // Filtrado local de usuarios
+  const filteredUsers = users.filter((user) => {
+    const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
+    const email = user.email?.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
+    return fullName.includes(query) || email.includes(query);
+  });
 
   const createUser = async (data) => {
     await createUserRequest(data);
@@ -65,41 +74,60 @@ function Users() {
       <div className="flex-1 bg-background min-h-screen">
         <Navbar />
 
-        <div className="p-6">
-          <h1 className="text-xl font-bold mb-4">
+        <div className="p-6 px-15 pt-10">
+          <h1 className="text-2xl font-bold mt-2 mb-3">
             Gestión de usuarios
           </h1>
+          <p className="text-sm text-gray-400 mb-6">
+            Control de personal y acceso al sistema FarmaUady.
+          </p>
 
-          <button
-            onClick={() => {
-              setEditingUser(null);
-              setIsModalOpen(true);
-            }}
-            className="mb-4 bg-primary text-white px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2"
-          >
-            <Plus/> Registrar usuario
-          </button>
+          <div className="rounded-xl shadow border border-gray-300 my-10"> 
+            <div className="flex items-center justify-between gap-4 bg-lightBlue p-6 rounded-t-xl">
+              {/* Barra de búsqueda */}
+              <div className="relative w-full max-w-md">
+                <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre o correo"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+              {/* Botón nuevo usuario */}
+              <button
+                onClick={() => {
+                  setEditingUser(null);
+                  setIsModalOpen(true);
+                }}
+                className="bg-primary text-white px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 whitespace-nowrap text-sm font-medium"
+              >
+                <Plus size={18} /> Registrar usuario
+              </button>
+            </div>
 
-          <UserModal
-            isOpen={isModalOpen}
-            onClose={handleCloseModal}
-            onCreate={createUser}
-            onUpdate={updateUser}
-            editingUser={editingUser}
-          />
+            <UserModal
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              onCreate={createUser}
+              onUpdate={updateUser}
+              editingUser={editingUser}
+            />
 
-          <ConfirmModal
-            isOpen={isDeleteModalOpen}
-            onClose={handleCloseDeleteModal}
-            onConfirm={deleteUser}
-            user={deletingUser}
-          />
+            <ConfirmModal
+              isOpen={isDeleteModalOpen}
+              onClose={handleCloseDeleteModal}
+              onConfirm={deleteUser}
+              user={deletingUser}
+            />
 
-          <UserTable
-            users={users}
-            onEdit={editUser}
-            onDelete={handleDeleteClick}
-          />
+            <UserTable
+              users={filteredUsers}
+              onEdit={editUser}
+              onDelete={handleDeleteClick}
+            />
+          </div>
         </div>
 
       </div>

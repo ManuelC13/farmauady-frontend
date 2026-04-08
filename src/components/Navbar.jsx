@@ -13,11 +13,12 @@ function Navbar() {
 
   const { user } = useAuth();
   const userRole = user?.role || "Administrador";
+  const userName = user?.name || "Usuario";
 
   const title = `${userRole} / ${page}`;
 
   return (
-    <div className="w-full h-16 bg-background flex items-center justify-between px-6 shadow-sm">
+    <div className="w-full h-18 bg-background flex items-center justify-between px-6 shadow-sm">
       
       <h1 className="text-md font-semibold text-gray-700">
         {title}
@@ -29,11 +30,9 @@ function Navbar() {
             <p className="font-medium text-primary text-xs">{userRole}</p>
         </div>
 
-        <img // Hay que cambiar por la imagen de perfil real del usuario
-          src="https://i.pravatar.cc/40"
-          alt="user"
-          className="w-10 h-10 rounded-full"
-        />
+        <div className="w-12 h-12 rounded-full bg-blue-200 text-secondary flex items-center justify-center text-xl font-semibold flex-shrink-0">
+          {userName?.[0]?.toUpperCase()}
+        </div>
       </div>
 
     </div>
