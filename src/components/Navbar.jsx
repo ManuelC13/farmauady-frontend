@@ -8,6 +8,7 @@ function Navbar() {
     "/dashboard": "Dashboard",
     "/users": "Gestión de usuarios",
     "/vendedor/dashboard": "Dashboard",
+    "/vendedor/new-sale": "Nueva venta",
     "/vendedor/register-sale": "Registro de ventas",
     "/vendedor/products": "Productos",
   };

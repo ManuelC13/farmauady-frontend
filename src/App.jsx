@@ -4,10 +4,11 @@ import ForgotPassword from "./pages/auth/ForgotPassword"
 import ResetPassword from "./pages/auth/ResetPassword"
 import Dashboard from "./pages/administrator/Dashboard";
 import Users from "./pages/administrator/Users";
-import DashboardVendedor from "./pages/vendedor/dashboard";
-import RegisterSale from "./pages/vendedor/register-sale";
+import DashboardVendedor from "./pages/vendedor/Dashboard";
+import RegisterSale from "./pages/vendedor/Register-sale";
 import Products from "./pages/vendedor/Products";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import NewSale from "./pages/vendedor/NewSale";
 
 function App() {
   return (
@@ -25,9 +26,10 @@ function App() {
       <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
 
       {/* Rutas protegidas del Vendedor */}
-      <Route path="/vendedor/Dashboard" element={<ProtectedRoute><DashboardVendedor /></ProtectedRoute>} />
-      <Route path="/vendedor/Register-sale" element={<ProtectedRoute><RegisterSale /></ProtectedRoute>} />
-      <Route path="/vendedor/Products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+      <Route path="/vendedor/dashboard" element={<ProtectedRoute><DashboardVendedor /></ProtectedRoute>} />
+      <Route path="/vendedor/new-sale" element={<ProtectedRoute><NewSale /></ProtectedRoute>} />  
+      <Route path="/vendedor/register-sale" element={<ProtectedRoute><RegisterSale /></ProtectedRoute>} />
+      <Route path="/vendedor/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
     </Routes>
   );
 }

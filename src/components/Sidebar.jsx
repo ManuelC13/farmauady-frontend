@@ -29,11 +29,11 @@ function Sidebar() {
   };
 
   const allMenuItems = [
-    { name: "Dashboard",             path: "/dashboard",     icon: LayoutGrid,       roles: ["Administrador"] },
-    { name: "Gestión de usuarios",   path: "/users",         icon: UsersRound,       roles: ["Administrador"] },
-    { name: "Gestión de inventario", path: "/inventory",     icon: Archive,          roles: ["Administrador"] },
-    { name: "Historial de ventas",   path: "/sales",         icon: BadgeDollarSign,  roles: ["Administrador"] },
-    { name: "Reportes",              path: "/reports",       icon: TrendingUp,       roles: ["Administrador"] },
+    { name: "Dashboard",             path: "/dashboard",              icon: LayoutGrid,       roles: ["Administrador"] },
+    { name: "Gestión de usuarios",   path: "/users",                  icon: UsersRound,       roles: ["Administrador"] },
+    { name: "Gestión de inventario", path: "/inventory",              icon: Archive,          roles: ["Administrador"] },
+    { name: "Historial de ventas",   path: "/sales",                  icon: BadgeDollarSign,  roles: ["Administrador"] },
+    { name: "Reportes",              path: "/reports",                icon: TrendingUp,       roles: ["Administrador"] },
     { name: "Dashboard",             path: "/vendedor/dashboard",     icon: LayoutGrid,       roles: ["Vendedor"] },
     { name: "Registro de ventas",    path: "/vendedor/register-sale", icon: Receipt,          roles: ["Vendedor"] },
     { name: "Productos",             path: "/vendedor/products",      icon: Boxes,            roles: ["Vendedor"] },
