@@ -5,4 +5,12 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-primary: #0A6AD3;
+  --color-secondary: #0853A4;
+  --color-muted: #A6B2C3;
+  --color-success: #63ED56;
+  --color-warning: #F59E0B;
+  --color-danger: #DE0B12;
+  --color-background: #F5F5F5;
+  --color-info: #3B82F6;
+  --color-lightBlue: #E6F2FF;
 }
