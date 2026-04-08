@@ -18,8 +18,6 @@ function Navbar() {
   const { user } = useAuth();
   const userRole = user?.role || "Administrador";
 
-  const title = `${userRole} / ${page}`;
-
   return (
     <div className="w-full h-18 bg-background flex items-center justify-between px-6 shadow-sm">
       
@@ -33,8 +31,8 @@ function Navbar() {
             <p className="font-medium text-primary text-xs">{userRole}</p>
         </div>
 
-        <div className="w-12 h-12 rounded-full bg-blue-200 text-secondary flex items-center justify-center text-xl font-semibold flex-shrink-0">
-          {userName?.[0]?.toUpperCase()}
+        <div className="w-12 h-12 rounded-full bg-blue-200 text-secondary flex items-center justify-center text-xl font-semibold shrink-0">
+          {user?.name?.[0]?.toUpperCase() || "U"}
         </div>
       </div>
 

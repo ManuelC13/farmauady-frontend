@@ -42,7 +42,6 @@ function Sidebar() {
   const menu = allMenuItems.filter(item => item.roles.includes(roleName));
 
   return (
-    <div className="w-64 h-screen bg-primary text-white flex flex-col justify-between">
   <>
     <div className="w-64 h-screen bg-blue-700 text-white flex flex-col justify-between">
       
@@ -98,8 +97,8 @@ function Sidebar() {
       {/* Bottom */}
       <div className="p-4">
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+          onClick={() => setShowLogoutModal(true)}
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-600 transition"
         >
           <LogOut size={20} />
           Cerrar sesión
