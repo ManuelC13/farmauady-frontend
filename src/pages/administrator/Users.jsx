@@ -1,28 +1,22 @@
+import { useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { useUsers } from "../../hooks/useUsers";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import UserTable from "../../components/UserTable";
 import UserModal from "../../components/UserModal";
 import ConfirmModal from "../../components/ConfirmModal";
-import { useEffect, useState } from "react";
-import { createUserRequest, getUsersRequest, deleteUserRequest, updateUserRequest } from "../../api/user/user_routes";
 import { Plus, Search } from "lucide-react";
 
 function Users() {
-  const [users, setUsers] = useState([]);
+  const { users, createUser, deleteUser, updateUser } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [deletingUser, setDeletingUser] = useState(null); 
+  const { user: currentUser } = useAuth();
 
-  const loadUsers = async () => {
-    const res = await getUsersRequest();
-    setUsers(res.data);
-  };
-
-  useEffect(() => {
-    loadUsers();
-  }, []);
 
   // Filtrado local de usuarios
   const filteredUsers = users.filter((user) => {
@@ -31,16 +25,6 @@ function Users() {
     const query = searchQuery.toLowerCase().trim();
     return fullName.includes(query) || email.includes(query);
   });
-
-  const createUser = async (data) => {
-    await createUserRequest(data);
-    loadUsers(); 
-  };
-
-  const deleteUser = async (id) => {
-    await deleteUserRequest(id);
-    loadUsers(); 
-  };
 
   const editUser = (user) => {
     setEditingUser(user);
@@ -55,11 +39,6 @@ function Users() {
   const handleCloseDeleteModal = () => {
     setIsDeleteModalOpen(false);
     setDeletingUser(null);
-  };
-
-  const updateUser = async (id, data) => {
-    await updateUserRequest(id, data);
-    loadUsers();
   };
 
   const handleCloseModal = () => {
@@ -126,6 +105,7 @@ function Users() {
               users={filteredUsers}
               onEdit={editUser}
               onDelete={handleDeleteClick}
+              currentUser={currentUser}
             />
           </div>
         </div>
