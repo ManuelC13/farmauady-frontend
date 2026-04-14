@@ -1,6 +1,13 @@
 import { SquarePen, Trash2, ShieldCheck } from "lucide-react";
 
-function UserTable({ users, onEdit, onDelete }) {
+export const canDeleteUser = (currentUser, targetUser) => {
+  return (
+    currentUser?.id_user !== targetUser?.id_user &&
+    targetUser?.role?.name !== "Administrador"
+  );
+};
+
+function UserTable({ users, onEdit, onDelete, currentUser }) {
   return (
     <div className="bg-background overflow-hidden rounded-b-xl">
       <table className="w-full text-left">
@@ -25,8 +32,11 @@ function UserTable({ users, onEdit, onDelete }) {
               </td>
             </tr>
           ) : (
-            users.map((user) => (
-              <tr key={user.id_user} className="border-b border-gray-300 hover:bg-secondary/10 transition">
+            users.map((user) => {
+              const canDelete = canDeleteUser(currentUser, user);
+
+              return (
+              <tr key={user.id} className="border-b border-gray-300 hover:bg-secondary/10 transition">
 
                 {/* Usuario */}
                 <td className="py-4 px-6">
@@ -81,17 +91,33 @@ function UserTable({ users, onEdit, onDelete }) {
                   >
                     <SquarePen size={22} />
                   </button>
-                  <button
+                  {/*<button
                     onClick={() => onDelete(user)}
                     className="p-2 rounded-lg hover:bg-danger/10 text-danger transition cursor-pointer"
                     title="Eliminar usuario"
+                  >
+                    <Trash2 size={22} />
+                  </button>*/}
+                  <button
+                    onClick={() => onDelete(user)}
+                    disabled={!canDelete}
+                    className={`p-2 rounded-lg transition cursor-pointer ${
+                      canDelete
+                        ? "hover:bg-danger/10 text-danger"
+                        : "opacity-30 cursor-not-allowed text-gray-400"
+                    }`}
+                    title={
+                      !canDelete
+                        ? "No tienes permisos para eliminar este usuario"
+                        : "Eliminar usuario"
+                    }
                   >
                     <Trash2 size={22} />
                   </button>
                 </td>
 
               </tr>
-            ))
+            )})
           )}
         </tbody>
       </table>

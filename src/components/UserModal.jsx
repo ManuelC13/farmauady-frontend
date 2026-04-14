@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
+import { usePasswordValidation } from "../hooks/usePasswordValidation";
 
 function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
-  const isEditMode = !!editingUser;
 
   const initialForm = {
     first_name: "",
@@ -14,7 +14,15 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
     status: "Activo",
   };
 
+  const isEditMode = !!editingUser;
   const [form, setForm] = useState(initialForm);
+  const { passwordValidation, validate, isValid: isPasswordValid, reset: resetPassword } = usePasswordValidation();
+  const [confirmTouched, setConfirmTouched] = useState(false);
+
+  const passwordsMatch =
+    form.confirm_password.length > 0 &&
+    form.password === form.confirm_password;
+
 
   useEffect(() => {
     if (editingUser) {
@@ -32,11 +40,20 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
     }
   }, [editingUser]);
 
+
   if (!isOpen) return null;
 
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    setForm({ ...form, [name]: value });
+
+    if (name === "password") {
+      validate(value);
+    }
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -59,15 +76,27 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
         alert("La contraseña es obligatoria");
         return;
       }
+
+      if (!isPasswordValid) {
+        alert("La contraseña no cumple los requisitos");
+        return;
+      }
+
       if (form.password !== form.confirm_password) {
         alert("Las contraseñas no coinciden");
         return;
       }
+      
       payload.password = form.password;
       await onCreate(payload);
+
     } else {
       // Si el usuario escribe una nueva contraseña se valida e incluye en el payload. Si no, se mantiene la actual.
       if (form.password || form.confirm_password) {
+        if (!isPasswordValid) {
+          alert("La contraseña no cumple los requisitos");
+          return;
+        }
         if (form.password !== form.confirm_password) {
           alert("Las contraseñas no coinciden");
           return;
@@ -82,6 +111,8 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
 
   const handleClose = () => {
     setForm(initialForm);
+    resetPassword();
+    setConfirmTouched(false);
     onClose();
   };
 
@@ -162,7 +193,7 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
               </div>
 
               {/* Contraseña */}
-              <div>
+              {/*div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Contraseña *
                 </label>
@@ -175,10 +206,49 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
                   required={!isEditMode}
                   className={`${inputBase} ${inputEnabled}`}
                 />
+                {form.password && (
+                  <ul className="text-xs mt-2 space-y-1">
+                    <li className={passwordValidation.length ? "text-green-500" : "text-gray-400"}>• Mínimo 8 caracteres</li>
+                    <li className={passwordValidation.upper ? "text-green-500" : "text-gray-400"}>• Al menos una mayúscula</li>
+                    <li className={passwordValidation.lower ? "text-green-500" : "text-gray-400"}>• Al menos una minúscula</li>
+                    <li className={passwordValidation.number ? "text-green-500" : "text-gray-400"}>• Al menos un número</li>
+                    <li className={passwordValidation.special ? "text-green-500" : "text-gray-400"}>• Al menos un carácter especial</li>
+                  </ul>
+                )}
+              </div>*/}
+              
+              {/* Contraseña */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Contraseña *
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={handleChange}
+                  required={!isEditMode}
+                  className={`${inputBase} ${inputEnabled}`}
+                />
+                {form.password && !isPasswordValid && (
+                  <div className="absolute top-full mt-2 left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50">
+                    {/* Flecha apuntando hacia arriba */}
+                    <div className="absolute -top-2 left-4 w-3 h-3 bg-white border-t border-l border-gray-200 rotate-45" />
+                    <p className="text-xs font-semibold text-gray-600 mb-2">La contraseña debe tener:</p>
+                    <ul className="text-xs space-y-1">
+                      <li className={passwordValidation.length ? "text-green-500" : "text-gray-400"}>• Mínimo 8 caracteres</li>
+                      <li className={passwordValidation.upper ? "text-green-500" : "text-gray-400"}>• Al menos una mayúscula</li>
+                      <li className={passwordValidation.lower ? "text-green-500" : "text-gray-400"}>• Al menos una minúscula</li>
+                      <li className={passwordValidation.number ? "text-green-500" : "text-gray-400"}>• Al menos un número</li>
+                      <li className={passwordValidation.special ? "text-green-500" : "text-gray-400"}>• Al menos un carácter especial</li>
+                    </ul>
+                  </div>
+                )}
               </div>
 
               {/* Confirmar contraseña */}
-              <div>
+              <div className="relative">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Confirmar contraseña *
                 </label>
@@ -187,10 +257,20 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
                   name="confirm_password"
                   placeholder="••••••••"
                   value={form.confirm_password}
-                  onChange={handleChange}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setConfirmTouched(false);
+                  }}
+                  onBlur={() => setConfirmTouched(true)}
                   required={!isEditMode}
                   className={`${inputBase} ${inputEnabled}`}
                 />
+                {confirmTouched && form.confirm_password && !passwordsMatch && (
+                  <div className="absolute top-full mt-2 left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-3 z-50">
+                    <div className="absolute -top-2 left-4 w-3 h-3 bg-white border-t border-l border-gray-200 rotate-45" />
+                    <p className="text-xs font-semibold text-red-500">Las contraseñas no coinciden</p>
+                  </div>
+                )}
               </div>
 
               {/* Estado */}
@@ -238,7 +318,16 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
               </button>
               <button
                 type="submit"
-                className="w-full py-3 rounded-lg bg-primary text-white font-semibold text-base hover:bg-secondary transition cursor-pointer"
+                disabled={
+                  (!isEditMode && (!isPasswordValid || !passwordsMatch)) ||
+                  (isEditMode && form.password && (!isPasswordValid || !passwordsMatch))
+                }
+                className={`w-full py-3 rounded-lg text-white font-semibold text-base transition ${
+                  (!isEditMode && (!isPasswordValid || !passwordsMatch)) ||
+                  (isEditMode && form.password && (!isPasswordValid || !passwordsMatch))
+                    ? "bg-gray-300 cursor-not-allowed"
+                    : "bg-primary hover:bg-secondary cursor-pointer"
+                }`}
               >
                 {isEditMode ? "Actualizar" : "Registrar"}
               </button>
