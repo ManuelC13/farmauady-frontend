@@ -1,11 +1,15 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import ModalConfirmation from "./ModalConfirmation";
+import { useState } from "react";
 import {
-  LayoutDashboard,
-  Users,
-  Package,
-  DollarSign,
-  BarChart3,
+  LayoutGrid,
+  UsersRound,
+  Archive,
+  BadgeDollarSign,
+  TrendingUp,
+  Receipt,
+  Boxes,
   User,
   LogOut,
   Cross
@@ -14,23 +18,32 @@ import {
 function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  const roleName = user?.role ?? "";
+  const roleLabel = roleName.toUpperCase();
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
 
-  const menu = [
-    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-    { name: "Gestión de usuarios", path: "/users", icon: Users },
-    { name: "Gestión de inventario", path: "/inventory", icon: Package },
-    { name: "Historial de ventas", path: "/sales", icon: DollarSign },
-    { name: "Reportes", path: "/reports", icon: BarChart3 },
+  const allMenuItems = [
+    { name: "Dashboard",             path: "/dashboard",              icon: LayoutGrid,       roles: ["Administrador"] },
+    { name: "Gestión de usuarios",   path: "/users",                  icon: UsersRound,       roles: ["Administrador"] },
+    { name: "Gestión de inventario", path: "/inventory",              icon: Archive,          roles: ["Administrador"] },
+    { name: "Historial de ventas",   path: "/sales",                  icon: BadgeDollarSign,  roles: ["Administrador"] },
+    { name: "Reportes",              path: "/reports",                icon: TrendingUp,       roles: ["Administrador"] },
+    { name: "Dashboard",             path: "/vendedor/dashboard",     icon: LayoutGrid,       roles: ["Vendedor"] },
+    { name: "Registro de ventas",    path: "/vendedor/register-sale", icon: Receipt,          roles: ["Vendedor"] },
+    { name: "Productos",             path: "/vendedor/products",      icon: Boxes,            roles: ["Vendedor"] },
   ];
 
+  const menu = allMenuItems.filter(item => item.roles.includes(roleName));
+
   return (
-    <div className="w-64 h-screen bg-primary text-white flex flex-col justify-between">
+  <>
+    <div className="w-64 h-screen bg-blue-700 text-white flex flex-col justify-between">
       
       {/* Top */}
       <div>
@@ -41,7 +54,7 @@ function Sidebar() {
         </div>
 
         {/* Section */}
-        <p className="px-6 text-sm text-blue-200 mb-4 mt-6">ADMINISTRADOR</p>
+        <p className="px-6 text-sm text-blue-200 mb-4 mt-6">{roleLabel}</p>
 
         {/* Menu */}
         <nav className="flex flex-col gap-2 px-3">
@@ -84,14 +97,25 @@ function Sidebar() {
       {/* Bottom */}
       <div className="p-4">
         <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-secondary/50 transition"
+          onClick={() => setShowLogoutModal(true)}
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-600 transition"
         >
           <LogOut size={20} />
           Cerrar sesión
         </button>
       </div>
     </div>
+
+      <ModalConfirmation
+        isOpen={showLogoutModal}
+        title="¿Cerrar sesión?"
+        message="¿Estás seguro que deseas cerrar sesión? Tendrás que volver a ingresas tus credenciales la proxima vez"
+        confirmText="Cerrar sesión"
+        cancelText="Cancelar"
+        onConfirm={handleLogout}
+        onCancel={() => setShowLogoutModal(false)}
+      />
+    </>
   );
 }
 

@@ -41,7 +41,7 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
                 {/* Usuario */}
                 <td className="py-4 px-6">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-md font-semibold flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-md font-semibold shrink-0">
                       {user.first_name?.[0]?.toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-gray-800">
