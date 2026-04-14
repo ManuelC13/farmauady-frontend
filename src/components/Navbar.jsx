@@ -11,6 +11,7 @@ function Navbar() {
     "/vendedor/new-sale": "Nueva venta",
     "/vendedor/register-sale": "Registro de ventas",
     "/vendedor/products": "Productos",
+    "/profile": "Mi perfil",
   };
 
   const page = routes[location.pathname] || "";

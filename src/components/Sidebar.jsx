@@ -80,18 +80,23 @@ function Sidebar() {
           })}
         </nav>
 
-        {/* Config */}
         <p className="px-6 mt-6 text-sm text-blue-200">CONFIGURACIÓN</p>
 
-        <div className="p-4">
+        <div className="p-4 px-3">
           <Link
             to="/profile"
-            className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-secondary/50"
+            className={`flex items-center gap-3 px-4 py-2 rounded-lg transition
+              ${
+                location.pathname === "/profile"
+                  ? "bg-secondary"
+                  : "hover:bg-secondary/50"
+              }`}
           >
             <User size={20} />
             Mi perfil
           </Link>
         </div>
+
       </div>
 
       {/* Bottom */}

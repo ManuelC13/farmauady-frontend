@@ -9,6 +9,7 @@ import RegisterSale from "./pages/vendedor/Register-sale";
 import Products from "./pages/vendedor/Products";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import NewSale from "./pages/vendedor/NewSale";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -30,6 +31,9 @@ function App() {
       <Route path="/vendedor/new-sale" element={<ProtectedRoute><NewSale /></ProtectedRoute>} />  
       <Route path="/vendedor/register-sale" element={<ProtectedRoute><RegisterSale /></ProtectedRoute>} />
       <Route path="/vendedor/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+
+      {/* Ruta Común */}
+      <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     </Routes>
   );
 }

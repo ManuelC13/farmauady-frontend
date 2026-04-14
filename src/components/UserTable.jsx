@@ -36,7 +36,7 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
               const canDelete = canDeleteUser(currentUser, user);
 
               return (
-              <tr key={user.id} className="border-b border-gray-300 hover:bg-secondary/10 transition">
+              <tr key={user.id_user} className="border-b border-gray-300 hover:bg-secondary/10 transition">
 
                 {/* Usuario */}
                 <td className="py-4 px-6">
