@@ -43,12 +43,12 @@ function Sidebar() {
 
   return (
   <>
-    <div className="w-64 h-screen bg-blue-700 text-white flex flex-col justify-between">
+    <div className="w-64 h-screen bg-primary text-white flex flex-col justify-between">
       
       {/* Top */}
       <div>
         {/* Logo */}
-        <div className="flex items-center gap-2 px-6 py-6 text-xl font-bold">
+        <div className="flex items-center gap-2 px-8 py-6 text-xl font-bold">
           <Cross size={30} strokeWidth={2.5}/>
           FarmaUady
         </div>
@@ -92,7 +92,7 @@ function Sidebar() {
                   : "hover:bg-secondary/50"
               }`}
           >
-            <User size={20} />
+            <User size={22} />
             Mi perfil
           </Link>
         </div>
@@ -103,7 +103,7 @@ function Sidebar() {
       <div className="p-4">
         <button
           onClick={() => setShowLogoutModal(true)}
-          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          className="flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-secondary/50 transition"
         >
           <LogOut size={20} />
           Cerrar sesión
