@@ -63,13 +63,25 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    
+    const refreshUser = async () => {
+        try {
+            const res = await verifyRequest();
+            setUser(res.data.user);
+        } catch {
+            //
+        }
+    };
+
     const value = useMemo(() => ({
         user,
         isAuthenticated,
         loading,
         signin,
-        logout
+        logout,
+        refreshUser
     }), [user, isAuthenticated, loading]);
+
 
     return (
         <AuthContext.Provider value={value}>

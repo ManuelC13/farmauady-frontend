@@ -14,3 +14,6 @@ export const updateUserRequest = (id, user) =>
 
 export const deleteUserRequest = (id) =>
     api.delete(`/users/${id}`);
+
+export const changePasswordRequest = (data) =>
+    api.patch("/users/me/change-password", data);

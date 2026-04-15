@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { useToast } from "../../context/ToastContext";
 import PrimaryButton from "../../components/PrimaryButton";
 import { Cross, Eye, EyeOff } from "lucide-react";
 
@@ -10,6 +11,7 @@ const Login = () => {
 
     const { user, signin, isAuthenticated } = useAuth();
     const navigate = useNavigate();
+    const toast = useToast();
     const [form, setForm] = useState({ email: "", password: "" });
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -37,9 +39,12 @@ const Login = () => {
         setError(null);
         setLoading(true);
         try {
-            await signin(form.email, form.password);
+            const data = await signin(form.email, form.password);
+            toast.success(`¡Bienvenido, ${data.user?.name || "Usuario"}!`);
         } catch (err) {
-            setError(err.response?.data?.detail || "Error al iniciar sesión. No se pudo conectar al servidor o revise su conexión a internet.");
+            const msg = err.response?.data?.detail || "Error al iniciar sesión. No se pudo conectar al servidor o revise su conexión a internet.";
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }

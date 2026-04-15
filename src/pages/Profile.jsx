@@ -2,15 +2,25 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
-import { User, Mail, UserCircle, Key, Trash2, Edit, Save, X } from "lucide-react";
+import { User, Mail, UserCircle, Key, Edit, Save, X } from "lucide-react";
+import ChangePasswordModal from "../components/ChangePasswordModal";
+import { updateUserRequest } from "../api/user/user_routes";
+import { useToast } from "../context/ToastContext";
+
 
 function Profile() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
+
   const isAdmin = user?.role === "Administrador";
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
+  const toast = useToast()
+
+  const [isEditing, setIsEditing]                   = useState(false);
+  const [nombre, setNombre]                         = useState("");
+  const [apellido, setApellido]                     = useState("");
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [saving, setSaving]                         = useState(false);
+  const [saveError, setSaveError]                   = useState("");
 
   useEffect(() => {
     if (user?.name) {
@@ -24,7 +34,32 @@ function Profile() {
     const parts = user?.name?.split(" ") || [];
     setNombre(parts[0] || "");
     setApellido(parts.slice(1).join(" ") || "");
+    setSaveError("");
     setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    if (!nombre.trim() || !apellido.trim()) {
+      toast.error("El nombre y apellido no pueden estar vacíos");
+      return;
+    }
+    setSaving(true);
+    setSaveError("");
+    try {
+      await updateUserRequest(user.id, {
+        first_name: nombre.trim(),
+        last_name: apellido.trim(),
+      });
+      await refreshUser();
+      setIsEditing(false);
+      toast.success("Cambios guardados exitosamente");
+
+    } catch (err) {
+      setSaveError(err?.response?.data?.detail || "Error al guardar los cambios");
+      toast.error("error al guardar los cambios")
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -55,41 +90,48 @@ function Profile() {
                   <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mt-2">
                     <span className="text-blue-600 font-semibold">{user?.role || ""}</span>
                     <span className={`px-3 py-1 text-xs font-bold rounded-full uppercase tracking-wider ${
-                        user?.status === "ACTIVO"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-600"
-                      }`}>
+                      user?.status === "ACTIVO"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-red-100 text-red-600"
+                    }`}>
                       Estado: {user?.status || "ACTIVO"}
                     </span>
                   </div>
                 </div>
 
                 {isAdmin && (
-                  <div className="flex gap-3">
-                    {!isEditing ? (
-                      <button
-                        onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-md"
-                      >
-                        <Edit size={18} />
-                        Editar Perfil
-                      </button>
-                    ) : (
-                      <>
+                  <div className="flex flex-col items-end gap-2">
+                    <div className="flex gap-3">
+                      {!isEditing ? (
                         <button
-                          onClick={() => setIsEditing(false)}
+                          onClick={() => setIsEditing(true)}
                           className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-md"
                         >
-                          <Save size={18} />
-                          Guardar
+                          <Edit size={18} />
+                          Editar Perfil
                         </button>
-                        <button
-                          onClick={handleCancel}
-                          className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl font-bold transition"
-                        >
-                          <X size={18} />
-                        </button>
-                      </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold transition shadow-md disabled:opacity-60"
+                          >
+                            <Save size={18} />
+                            {saving ? "Guardando..." : "Guardar"}
+                          </button>
+                          <button
+                            onClick={handleCancel}
+                            disabled={saving}
+                            className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-2.5 rounded-xl font-bold transition"
+                          >
+                            <X size={18} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                    {saveError && (
+                      <p className="text-xs text-red-500 font-medium">{saveError}</p>
                     )}
                   </div>
                 )}
@@ -161,29 +203,13 @@ function Profile() {
                 <hr className="my-10 border-gray-100" />
 
                 {/* Botones */}
-                <div className="flex flex-col sm:flex-row justify-between gap-4">
+                <div className="flex">
                   <button
-                    disabled={!isAdmin}
-                    className={`flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold transition shadow-sm ${
-                      isAdmin
-                        ? "bg-blue-600 hover:bg-blue-700 text-white"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    }`}
+                    onClick={() => setShowChangePassword(true)}
+                    className="flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold transition shadow-sm bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     <Key size={18} />
                     Cambiar contraseña
-                  </button>
-
-                  <button
-                    disabled={!isAdmin}
-                    className={`flex items-center justify-center gap-2 px-8 py-3 rounded-xl font-bold transition shadow-sm ${
-                      isAdmin
-                        ? "bg-red-600 hover:bg-red-700 text-white"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                    }`}
-                  >
-                    <Trash2 size={18} />
-                    Eliminar cuenta
                   </button>
                 </div>
               </div>
@@ -191,6 +217,12 @@ function Profile() {
           </div>
         </main>
       </div>
+
+      {/* Modal cambio de contraseña */}
+      <ChangePasswordModal
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
     </div>
   );
 }
