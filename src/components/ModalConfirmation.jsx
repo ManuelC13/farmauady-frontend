@@ -18,7 +18,7 @@ function ModalConfirmation({
                 className="w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl"
                 onClick={(e) => e.stopPropagation()}
             >
-                <div className="flex items-center justify-between bg-blue-600 px-6 py-4">
+                <div className="flex items-center justify-between bg-primary px-6 py-4">
                     <h2 className="text-lg font-bold text-white">{title}</h2>
                     <button
                         id="modal-close-btn"
@@ -40,14 +40,14 @@ function ModalConfirmation({
                     <button
                         id="modal-cancel-btn"
                         onClick={onCancel}
-                        className="flex-1 cursor-pointer rounded-lg bg-red-600 py-3 text-[15px] font-bold text-white transition hover:bg-red-700"
+                        className="flex-1 cursor-pointer rounded-lg bg-danger py-3 text-[15px] font-bold text-white transition hover:bg-red-700"
                     >
                         {cancelText}
                     </button>
                     <button
                         id="modal-confirm-btn"
                         onClick={onConfirm}
-                        className="flex-1 cursor-pointer rounded-lg bg-blue-600 py-3 text-[15px] font-bold text-white transition hover:bg-blue-700"
+                        className="flex-1 cursor-pointer rounded-lg bg-primary py-3 text-[15px] font-bold text-white transition hover:bg-blue-700"
                     >
                         {confirmText}
                     </button>

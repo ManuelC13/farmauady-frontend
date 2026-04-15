@@ -1,5 +1,12 @@
 import { SquarePen, Trash2, ShieldCheck } from "lucide-react";
 
+export const canEditUser = (currentUser, targetUser) => {
+  return (
+    currentUser?.id_user !== targetUser?.id_user &&
+    targetUser?.role?.name !== "Administrador"
+  );
+};
+
 export const canDeleteUser = (currentUser, targetUser) => {
   return (
     currentUser?.id_user !== targetUser?.id_user &&
@@ -33,10 +40,11 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
             </tr>
           ) : (
             users.map((user) => {
+              const canEdit = canEditUser(currentUser, user);
               const canDelete = canDeleteUser(currentUser, user);
 
               return (
-              <tr key={user.id} className="border-b border-gray-300 hover:bg-secondary/10 transition">
+              <tr key={user.id_user} className="border-b border-gray-300 hover:bg-secondary/10 transition">
 
                 {/* Usuario */}
                 <td className="py-4 px-6">
@@ -86,18 +94,16 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
                 <td className="py-4 px-6 text-right">
                   <button
                     onClick={() => onEdit(user)}
-                    className="p-2 rounded-lg hover:bg-secondary/10 text-primary transition cursor-pointer"
-                    title="Editar usuario"
+                    disabled={!canEdit}
+                    className={`p-2 rounded-lg transition cursor-pointer ${
+                      canEdit
+                        ? "hover:bg-secondary/10 text-primary"
+                        : "opacity-30 cursor-not-allowed text-gray-400"
+                    }`}
+                    title={!canEdit ? "No tienes permisos para editar este usuario" : "Editar usuario"}
                   >
                     <SquarePen size={22} />
                   </button>
-                  {/*<button
-                    onClick={() => onDelete(user)}
-                    className="p-2 rounded-lg hover:bg-danger/10 text-danger transition cursor-pointer"
-                    title="Eliminar usuario"
-                  >
-                    <Trash2 size={22} />
-                  </button>*/}
                   <button
                     onClick={() => onDelete(user)}
                     disabled={!canDelete}
