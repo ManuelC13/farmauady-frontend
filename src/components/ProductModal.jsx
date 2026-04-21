@@ -99,7 +99,7 @@ function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
               {/* Nombre */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Nombre comercial / compuesto <span className="text-red-500">*</span>
+                  Nombre comercial <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -154,7 +154,7 @@ function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
               {/* Existencias */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Existencias iniciales <span className="text-red-500">*</span>
+                  Cantidad de stock <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
