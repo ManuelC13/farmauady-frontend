@@ -13,7 +13,8 @@ function Navbar() {
     "/vendedor/products": "Productos",
     "/profile": "Mi perfil",
     "/inventory": "Inventario de productos",
-    "/categories": "Categorías"
+    "/categories": "Categorías",
+    "/sales": "Historial de ventas"
   };
 
   const page = routes[location.pathname] || "";

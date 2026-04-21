@@ -6,5 +6,10 @@ export const createSaleRequest = (payload) =>
 export const getRecentSalesRequest = (limit = 5) =>
     api.get(`/sales/recent?limit=${limit}`);
 
-export const getAllSalesRequest = () =>
+// Para el vendedor — solo sus ventas
+export const getMySalesRequest = () =>
+    api.get("/sales/my-sales");
+
+// Para el admin — todas las ventas
+export const getAllSalesAdminRequest = () =>
     api.get("/sales/all");

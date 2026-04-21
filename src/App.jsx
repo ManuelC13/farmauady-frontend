@@ -6,6 +6,7 @@ import Dashboard from "./pages/administrator/Dashboard";
 import Users from "./pages/administrator/Users";
 import AdminProducts from "./pages/administrator/AdminProducts";
 import Categories from "./pages/administrator/Categories";
+import SalesHistory from "./pages/administrator/SalesHistory"
 import DashboardVendedor from "./pages/vendedor/Dashboard";
 import RegisterSale from "./pages/vendedor/Register-sale";
 import Products from "./pages/vendedor/Products";
@@ -29,6 +30,7 @@ function App() {
       <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
       <Route path="/inventory" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
       <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>}/>
+      <Route path="/sales" element={<ProtectedRoute><SalesHistory /></ProtectedRoute>}/>
 
       {/* Rutas protegidas del Vendedor */}
       <Route path="/vendedor/dashboard" element={<ProtectedRoute><DashboardVendedor /></ProtectedRoute>} />
