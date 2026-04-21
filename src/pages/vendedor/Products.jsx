@@ -1,19 +1,71 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import ProductTable from "../../components/ProductTable";
-import { ListFilter, Search, ChevronDown } from "lucide-react";
+import { ListFilter, Search, ChevronDown, Loader2 } from "lucide-react";
+import { getProductsRequest, getCategoriesRequest } from "../../api/product/product_routes";
+import { useToast } from "../../context/ToastContext";
 
 function Products() {
   // Estados para la categoria
   const [catOpen, setCatOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState("Todas");
-  const catOptions = ["Todas", "Analgésicos", "Antibióticos", "Gastrointestinal", "Material"];
+  const [categories, setCategories] = useState(["Todas"]);
+
+  // Fetch productos y categorias
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [catRes, prodRes] = await Promise.all([
+          getCategoriesRequest(),
+          getProductsRequest()
+        ]);
+        
+        // Categorias
+        const cats = Array.isArray(catRes.data) ? catRes.data : [];
+        setCategories(["Todas", ...cats.map(c => c.name)]);
+
+        // Mapeo de productos
+        const pData = Array.isArray(prodRes.data) ? prodRes.data : (prodRes.data?.products || []);
+        const mappedP = pData.map(p => {
+          let statusStr = "Disponible";
+          if (p.stock === 0) statusStr = "Agotado";
+          else if (p.stock <= p.minimum_stock) statusStr = "Stock crítico";
+          
+          return {
+            rawId: p.id_product,
+            sku: p.sku || "N/A",
+            name: p.name,
+            category: p.category?.name || "Sin Categoría",
+            price: parseFloat(p.sale_price).toFixed(2),
+            stock: `${p.stock} unds.`,
+            status: statusStr,
+            expiry: new Date(p.expiration_date).toLocaleDateString("es-MX", { day: '2-digit', month: '2-digit', year: 'numeric' })
+          };
+        });
+        setProducts(mappedP);
+
+      } catch (error) {
+        toast.error("Error cargando productos");
+        console.error("Error cargando productos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // Estados para el estado del producto
   const [statusOpen, setStatusOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("Todos");
   const statusOptions = ["Todos", "Disponible", "Stock crítico", "Agotado"];
+
+  // Búsqueda
+  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -49,8 +101,8 @@ function Products() {
                 </button>
 
                 {catOpen && (
-                  <div className="absolute right-0 mt-2 min-w-[200px] bg-white border rounded-lg shadow-lg z-50 overflow-hidden">
-                    {catOptions.map((option) => (
+                  <div className="absolute right-0 mt-2 min-w-[200px] max-h-64 overflow-y-auto bg-white border rounded-lg shadow-lg z-50">
+                    {categories.map((option) => (
                       <button
                         key={option}
                         onClick={() => {
@@ -103,6 +155,8 @@ function Products() {
                 <Search className="absolute left-3 text-blue-500" size={20} />
                 <input
                   type="text"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Buscar por SKU o nombre de producto"
                   className="pl-11 pr-4 py-2 bg-white border border-blue-400 rounded-lg text-sm w-80 focus:outline-none focus:ring-2 focus:ring-blue-200 transition shadow-sm h-full"
                 />
@@ -110,8 +164,19 @@ function Products() {
             </div>
 
             {/* Tabla */}
-            <div className="flex-1 min-h-0">
-              <ProductTable />
+            <div className="flex-1 min-h-0 relative">
+              {loading && (
+                <div className="absolute inset-0 z-20 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center">
+                  <Loader2 className="animate-spin text-blue-500 mb-2" size={32} />
+                  <span className="text-gray-500 font-medium">Cargando catálogo...</span>
+                </div>
+              )}
+              <ProductTable 
+                products={products}
+                searchTerm={searchTerm} 
+                categoryFilter={selectedCat} 
+                statusFilter={selectedStatus} 
+              />
             </div>
           </div>
         </main>

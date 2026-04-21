@@ -1,13 +1,80 @@
-import { Printer, Banknote, CreditCard, ChevronDown } from "lucide-react";
+import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getAllSalesRequest } from "../api/sales/sales_routes";
+import { useToast } from "../context/ToastContext";
 
-function SalesRecordTable({ sales = [] }) {
-  // Mock de datos para el historial
-  const displaySales = sales.length > 0 ? sales : [
-    { id: "010101", datetime: "10/04/2026, 10:25", items: 3, total: "245.00", method: "Efectivo" },
-    { id: "020202", datetime: "10/04/2026, 08:45", items: 1, total: "45.00", method: "Tarjeta" },
-    { id: "030303", datetime: "09/04/2026, 11:00", items: 5, total: "850.00", method: "Efectivo" },
-    { id: "040404", datetime: "09/04/2026, 10:50", items: 2, total: "120.00", method: "Efectivo" },
-  ];
+function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }) {
+  const [sales, setSales] = useState(propSales || []);
+  const [loading, setLoading] = useState(!propSales);
+  const toast = useToast();
+
+  useEffect(() => {
+    if (propSales && propSales.length > 0) {
+      setSales(propSales);
+      setLoading(false);
+      return;
+    }
+    
+    const fetchAllSales = async () => {
+      try {
+        setLoading(true);
+        const { data } = await getAllSalesRequest();
+        const mappedSales = data.map(sale => ({
+          id: sale.folio,
+          datetime: new Date(sale.sale_date).toLocaleString("es-MX", { 
+            day: '2-digit', month: '2-digit', year: 'numeric', 
+            hour: '2-digit', minute: '2-digit' 
+          }),
+          rawDate: new Date(sale.sale_date),
+          items: sale.details.reduce((sum, item) => sum + item.quantity, 0),
+          total: parseFloat(sale.total).toFixed(2),
+          method: sale.payment_method ? (sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)) : "Efectivo"
+        }));
+        setSales(mappedSales);
+      } catch (error) {
+        toast.error("Error cargando el historial de ventas");
+        console.error("Error cargando el historial de ventas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAllSales();
+  }, [propSales]);
+
+  const displaySales = sales.filter(sale => {
+    // Filtrar por ID de Venta (En este caso el folio)
+    if (searchTerm && !sale.id.toLowerCase().includes(searchTerm.toLowerCase())) {
+      return false;
+    }
+    
+    // Filtrar por fecha
+    if (timeFilter && sale.rawDate) {
+      const now = new Date();
+      const saleDate = sale.rawDate;
+      const msPerDay = 24 * 60 * 60 * 1000;
+      
+      switch (timeFilter) {
+        case "Hoy":
+          if (saleDate.toDateString() !== now.toDateString()) return false;
+          break;
+        case "Esta semana":
+          // Aproximación: últimos 7 días
+          if (now.getTime() - saleDate.getTime() > 7 * msPerDay) return false;
+          break;
+        case "Este mes":
+          if (saleDate.getMonth() !== now.getMonth() || saleDate.getFullYear() !== now.getFullYear()) return false;
+          break;
+        case "Este año":
+          if (saleDate.getFullYear() !== now.getFullYear()) return false;
+          break;
+        default:
+          break;
+      }
+    }
+    
+    return true;
+  });
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full flex flex-col">
@@ -26,29 +93,49 @@ function SalesRecordTable({ sales = [] }) {
           </thead>
 
           <tbody className="divide-y divide-gray-100">
-            {displaySales.map((sale, index) => (
-              <tr key={index} className="hover:bg-gray-50 transition-colors">
-                <td className="py-5 px-6 text-sm font-bold text-gray-800">{sale.id}</td>
-                <td className="py-5 px-6 text-sm text-gray-600 font-medium">{sale.datetime}</td>
-                <td className="py-5 px-6 text-sm text-gray-600 text-center font-bold">{sale.items}</td>
-                <td className="py-5 px-6 text-sm font-bold text-gray-800">${sale.total}</td>
-                <td className="py-5 px-6 text-sm text-gray-700">
-                  <div className="flex items-center gap-2">
-                    {sale.method === "Efectivo" ? (
-                      <Banknote size={18} className="text-gray-900" />
-                    ) : (
-                      <CreditCard size={18} className="text-gray-900" />
-                    )}
-                    <span className="font-medium">{sale.method}</span>
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="py-12 text-center text-gray-400">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    <Loader2 className="animate-spin text-blue-500" size={32} />
+                    <span className="text-sm font-medium">Cargando historial de ventas...</span>
                   </div>
                 </td>
-                <td className="py-5 px-6 text-center">
-                  <button className="p-2 hover:bg-gray-100 rounded-full transition-colors inline-flex items-center justify-center">
-                    <Printer size={20} className="text-[#007BFF]" />
-                  </button>
+              </tr>
+            ) : displaySales.length > 0 ? (
+              displaySales.map((sale, index) => (
+                <tr key={index} className="hover:bg-gray-50 transition-colors">
+                  <td className="py-5 px-6 text-sm font-bold text-gray-800">{sale.id}</td>
+                  <td className="py-5 px-6 text-sm text-gray-600 font-medium">{sale.datetime}</td>
+                  <td className="py-5 px-6 text-sm text-gray-600 text-center font-bold">{sale.items}</td>
+                  <td className="py-5 px-6 text-sm font-bold text-gray-800">${sale.total}</td>
+                  <td className="py-5 px-6 text-sm text-gray-700">
+                    <div className="flex items-center gap-2">
+                      {sale.method === "Efectivo" ? (
+                        <Banknote size={18} className="text-gray-900" />
+                      ) : (
+                        <CreditCard size={18} className="text-gray-900" />
+                      )}
+                      <span className="font-medium">{sale.method}</span>
+                    </div>
+                  </td>
+                  <td className="py-5 px-6 text-center">
+                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors inline-flex items-center justify-center">
+                      <Printer size={20} className="text-[#007BFF]" />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6" className="py-12 text-center text-gray-400 italic">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Info size={32} className="text-gray-300" />
+                    <span className="text-sm font-medium">No hay ventas registradas aún</span>
+                  </div>
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>

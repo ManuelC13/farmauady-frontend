@@ -7,6 +7,9 @@ export const getSaleProductsRequest = (search = "") =>
 export const getProductsRequest = () =>
     api.get("/products");
 
+export const getCategoriesRequest = () =>
+    api.get("/categories");
+
 export const getProductRequest = (id) =>
     api.get(`/products/${id}`);
 
