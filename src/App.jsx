@@ -4,6 +4,7 @@ import ForgotPassword from "./pages/auth/ForgotPassword"
 import ResetPassword from "./pages/auth/ResetPassword"
 import Dashboard from "./pages/administrator/Dashboard";
 import Users from "./pages/administrator/Users";
+import AdminProducts from "./pages/administrator/AdminProducts";
 import DashboardVendedor from "./pages/vendedor/Dashboard";
 import RegisterSale from "./pages/vendedor/Register-sale";
 import Products from "./pages/vendedor/Products";
@@ -25,6 +26,7 @@ function App() {
       {/* Rutas protegidas del Administrador */}
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
       <Route path="/users" element={<ProtectedRoute><Users /></ProtectedRoute>} />
+      <Route path="/inventory" element={<ProtectedRoute><AdminProducts /></ProtectedRoute>} />
 
       {/* Rutas protegidas del Vendedor */}
       <Route path="/vendedor/dashboard" element={<ProtectedRoute><DashboardVendedor /></ProtectedRoute>} />

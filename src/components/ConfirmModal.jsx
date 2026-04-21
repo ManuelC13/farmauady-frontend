@@ -1,7 +1,7 @@
 import { CircleX, TriangleAlert } from "lucide-react";
 
-function ConfirmModal({ isOpen, onClose, onConfirm, user }) {
-  if (!isOpen || !user) return null;
+function ConfirmModal({ isOpen, onClose, onConfirm, itemId, title, message }) {
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
@@ -9,7 +9,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, user }) {
 
         {/* Header */}
         <div className="bg-warning px-6 py-4 flex items-center justify-between">
-          <h2 className="text-white text-xl font-semibold">Eliminar Usuario</h2>
+          <h2 className="text-white text-xl font-semibold">{title}</h2>
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full text-white flex items-center justify-center hover:bg-white/30 transition cursor-pointer"
@@ -24,13 +24,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, user }) {
             <TriangleAlert size={30} className="text-warning" />
           </div>
 
-          <p className="text-gray-700 text-sm">
-            ¿Estás seguro de que deseas eliminar a{" "}
-            <span className="font-semibold text-gray-900">
-              {user.first_name} {user.last_name}
-            </span>
-            ? Su cuenta quedará inactiva y no podrá acceder al sistema.
-          </p>
+          <p className="text-gray-700 text-sm">{message}</p>
 
           {/* Botones */}
           <div className="grid grid-cols-2 gap-4 w-full mt-2">
@@ -42,7 +36,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, user }) {
             </button>
             <button
               onClick={() => {
-                onConfirm(user.id_user);
+                onConfirm(itemId); // 👈 ahora usa el id genérico
                 onClose();
               }}
               className="w-full py-3 rounded-lg bg-danger text-white font-semibold text-base hover:bg-red-700 transition cursor-pointer"
