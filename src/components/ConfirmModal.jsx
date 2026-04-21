@@ -36,7 +36,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, itemId, title, message }) {
             </button>
             <button
               onClick={() => {
-                onConfirm(itemId); // 👈 ahora usa el id genérico
+                onConfirm(itemId);
                 onClose();
               }}
               className="w-full py-3 rounded-lg bg-danger text-white font-semibold text-base hover:bg-red-700 transition cursor-pointer"
