@@ -2,6 +2,8 @@ import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info } from "lucid
 import { useState, useEffect } from "react";
 import { getAllSalesRequest } from "../api/sales/sales_routes";
 import { useToast } from "../context/ToastContext";
+import { pdf } from "@react-pdf/renderer";
+import TicketPDF from "./pdf/TicketPDF";
 
 function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState(propSales || []);
@@ -28,7 +30,9 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
           rawDate: new Date(sale.sale_date),
           items: sale.details.reduce((sum, item) => sum + item.quantity, 0),
           total: parseFloat(sale.total).toFixed(2),
-          method: sale.payment_method ? (sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)) : "Efectivo"
+          method: sale.payment_method ? (sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)) : "Efectivo",
+          // Guardamos el objeto completo para poder generar el PDF
+          rawSale: sale,
         }));
         setSales(mappedSales);
       } catch (error) {
@@ -76,6 +80,27 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
     return true;
   });
 
+  // Genera y descarga el PDF del ticket
+  const handleDownloadTicket = async (sale) => {
+    if (!sale.rawSale) {
+      toast.error("No se encontraron los detalles de esta venta.");
+      return;
+    }
+    try {
+      const blob = await pdf(<TicketPDF sale={sale.rawSale} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Ticket_${sale.id}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Ticket #${sale.id} descargado correctamente`);
+    } catch (error) {
+      console.error("Error al generar el ticket PDF:", error);
+      toast.error("No se pudo generar el ticket. Intenta de nuevo.");
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full flex flex-col">
       {/* Tabla con scroll */}
@@ -120,7 +145,11 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
                     </div>
                   </td>
                   <td className="py-5 px-6 text-center">
-                    <button className="p-2 hover:bg-gray-100 rounded-full transition-colors inline-flex items-center justify-center">
+                    <button
+                      onClick={() => handleDownloadTicket(sale)}
+                      title="Descargar ticket PDF"
+                      className="p-2 hover:bg-blue-50 rounded-full transition-colors inline-flex items-center justify-center"
+                    >
                       <Printer size={20} className="text-[#007BFF]" />
                     </button>
                   </td>

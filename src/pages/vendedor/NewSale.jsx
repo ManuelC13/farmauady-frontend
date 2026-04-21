@@ -6,6 +6,8 @@ import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader
 import { getSaleProductsRequest } from "../../api/product/product_routes";
 import { createSaleRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
+import { pdf } from "@react-pdf/renderer";
+import TicketPDF from "../../components/pdf/TicketPDF";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
@@ -123,32 +125,23 @@ function NewSale() {
     }
   };
 
-  // Imprime el ticket en consola y limpia la última venta (CONTENIDO DE PRUEBA)
-  const handlePrintTicket = () => {
+  // Genera y descarga el PDF del ticket de venta
+  const handlePrintTicket = async () => {
     if (!lastSale) return;
-    const separator = "================================";
-    const lines = [
-      separator,
-      `       FARMAUADY — TICKET DE VENTA`,
-      separator,
-      `Folio:    ${lastSale.folio}`,
-      `Fecha:    ${new Date(lastSale.sale_date).toLocaleString("es-MX")}`,
-      `Vendedor: ${lastSale.seller_name}`,
-      `Pago:     ${lastSale.payment_method ?? "Efectivo"}`,
-      separator,
-      ...lastSale.details.map(
-        (d) =>
-          `  ${d.product_name.padEnd(20)} x${d.quantity}  $${parseFloat(d.subtotal).toFixed(2)}`
-      ),
-      separator,
-      `  TOTAL:                    $${parseFloat(lastSale.total).toFixed(2)}`,
-      separator,
-      `       ¡Gracias por su compra!`,
-      separator,
-    ];
-    console.log(lines.join("\n"));
-    toast.success(`Ticket #${lastSale.folio} impreso en consola`);
-    setLastSale(null); // Limpia para que el botón vuelva a desactivarse
+    try {
+      const blob = await pdf(<TicketPDF sale={lastSale} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Ticket_${lastSale.folio}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Ticket #${lastSale.folio} descargado correctamente`);
+      setLastSale(null); // Limpia para que el botón vuelva a desactivarse
+    } catch (error) {
+      console.error("Error al generar el ticket PDF:", error);
+      toast.error("No se pudo generar el ticket. Intenta de nuevo.");
+    }
   };
 
   return (
