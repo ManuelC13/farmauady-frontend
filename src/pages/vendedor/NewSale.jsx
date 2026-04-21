@@ -3,7 +3,7 @@ import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import ProductCard from "../../components/ProductCard";
 import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader2, Package } from "lucide-react";
-import { getProductsRequest } from "../../api/product/product_routes";
+import { getSaleProductsRequest } from "../../api/product/product_routes";
 import { createSaleRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
 
@@ -19,7 +19,7 @@ function NewSale() {
   const fetchProducts = async (searchTerm = "") => {
     setLoading(true);
     try {
-      const response = await getProductsRequest(searchTerm);
+      const response = await getSaleProductsRequest(searchTerm);
       const mappedProducts = response.data.products.map((p) => ({
         id: p.id_product,
         name: p.name,

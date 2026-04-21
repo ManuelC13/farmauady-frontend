@@ -1,12 +1,11 @@
 import { api } from "../axios";
 
-export const getProductsRequest = (search = "") =>
-    api.get("/products/sale", {
-        params: { search }
-    });
-/*
+//Para Nueva Venta (catálogo con búsqueda)
+export const getSaleProductsRequest = (search = "") =>
+    api.get("/products/sale", { params: { search } });
+
 export const getProductsRequest = () =>
-    api.get("/products");*/
+    api.get("/products");
 
 export const getProductRequest = (id) =>
     api.get(`/products/${id}`);

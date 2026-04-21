@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, Package, Loader2 } from "lucide-react";
-import { getProductsRequest } from "../api/product/product_routes";
+import { getSaleProductsRequest } from "../api/product/product_routes";
 import ProductCard from "./ProductCard";
 
 function SaleManager() {
@@ -11,7 +11,7 @@ function SaleManager() {
     const fetchProducts = async (searchTerm = "") => {
         setLoading(true);
         try {
-            const response = await getProductsRequest(searchTerm);
+            const response = await getSaleProductsRequest(searchTerm);
             //Mapeo de datos del backend para las tarjetas
             const mappedProducts = response.data.products.map(p => ({
                 id: p.id_product,
