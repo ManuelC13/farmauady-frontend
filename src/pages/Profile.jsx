@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { User, Mail, UserCircle, Key, Edit, Save, X } from "lucide-react";
 import ChangePasswordModal from "../components/ChangePasswordModal";
-import { updateUserRequest } from "../api/user/user_routes";
+import { updateOwnProfileRequest } from "../api/user/user_routes";
 import { useToast } from "../context/ToastContext";
 
 
@@ -46,7 +46,7 @@ function Profile() {
     setSaving(true);
     setSaveError("");
     try {
-      await updateUserRequest(user.id, {
+      await updateOwnProfileRequest({
         first_name: nombre.trim(),
         last_name: apellido.trim(),
       });

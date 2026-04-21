@@ -191,31 +191,6 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
                   className={`${inputBase} ${inputEnabled}`}
                 />
               </div>
-
-              {/* Contraseña */}
-              {/*div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Contraseña *
-                </label>
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={handleChange}
-                  required={!isEditMode}
-                  className={`${inputBase} ${inputEnabled}`}
-                />
-                {form.password && (
-                  <ul className="text-xs mt-2 space-y-1">
-                    <li className={passwordValidation.length ? "text-green-500" : "text-gray-400"}>• Mínimo 8 caracteres</li>
-                    <li className={passwordValidation.upper ? "text-green-500" : "text-gray-400"}>• Al menos una mayúscula</li>
-                    <li className={passwordValidation.lower ? "text-green-500" : "text-gray-400"}>• Al menos una minúscula</li>
-                    <li className={passwordValidation.number ? "text-green-500" : "text-gray-400"}>• Al menos un número</li>
-                    <li className={passwordValidation.special ? "text-green-500" : "text-gray-400"}>• Al menos un carácter especial</li>
-                  </ul>
-                )}
-              </div>*/}
               
               {/* Contraseña */}
               <div className="relative">

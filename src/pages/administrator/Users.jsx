@@ -94,11 +94,20 @@ function Users() {
               editingUser={editingUser}
             />
 
-            <ConfirmModal
+            {/*<ConfirmModal
               isOpen={isDeleteModalOpen}
               onClose={handleCloseDeleteModal}
               onConfirm={deleteUser}
               user={deletingUser}
+            />*/}
+
+            <ConfirmModal
+              isOpen={isDeleteModalOpen}
+              onClose={handleCloseDeleteModal}
+              onConfirm={deleteUser}
+              itemId={deletingUser?.id_user}
+              title="Eliminar Usuario"
+              message={`¿Estás seguro de que deseas eliminar a ${deletingUser?.first_name} ${deletingUser?.last_name}? Su cuenta quedará inactiva y no podrá acceder al sistema.`}
             />
 
             <UserTable

@@ -3,6 +3,9 @@ import { api } from "../axios";
 export const getUsersRequest = () =>
     api.get("/users");
 
+export const updateOwnProfileRequest = (user) =>
+    api.put("/users/me", user);
+
 export const getUserRequest = (id) =>
     api.get(`/users/${id}`);
 
@@ -16,4 +19,4 @@ export const deleteUserRequest = (id) =>
     api.delete(`/users/${id}`);
 
 export const changePasswordRequest = (data) =>
-    api.patch("/users/me/change-password", data);
+    api.patch("/users/me/change-password", data);
