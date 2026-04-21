@@ -1,16 +1,18 @@
 import { Plus } from "lucide-react";
 
-function ProductCard({ product, onAdd }) {
+function ProductCard({ product, onAdd, cartQty = 0 }) {
+  const availableStock = product.stock - cartQty;
+
   const getStockColor = (stock) => {
-    if (stock === 0) return "bg-red-100 text-red-700 border-red-200";
+    if (stock <= 0) return "bg-red-100 text-red-700 border-red-200";
     if (stock <= 10) return "bg-yellow-100 text-yellow-700 border-yellow-200";
     return "bg-green-100 text-green-700 border-green-200";
   };
 
   const getStockLabel = (stock) => {
-      if (stock === 0) return "Agotado";
-      if (stock <= 10) return `Stock crítico: ${stock}`;
-      return `Stock: ${stock}`;
+    if (stock <= 0) return "Sin stock disponible";
+    if (stock <= 10) return `Disponible: ${stock}`;
+    return `Disponible: ${stock}`;
   };
 
   return (
@@ -27,8 +29,8 @@ function ProductCard({ product, onAdd }) {
                 ${product.price ? product.price.toFixed(2) : "0.00"}
             </span>
             <div className="flex">
-                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${getStockColor(product.stock)}`}>
-                    {getStockLabel(product.stock)}
+                <span className={`text-[9px] font-bold px-2 py-0.5 rounded-md ${getStockColor(availableStock)}`}>
+                    {getStockLabel(availableStock)}
                 </span>
             </div>
         </div>
@@ -36,7 +38,8 @@ function ProductCard({ product, onAdd }) {
       
       <button
         onClick={() => onAdd(product)}
-        className="bg-[#007BFF] hover:bg-blue-600 text-white p-2 rounded-full shadow-lg shadow-blue-100 transition-all transform active:scale-95 group-hover:scale-105"
+        disabled={availableStock <= 0}
+        className="bg-[#007BFF] hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white p-2 rounded-full shadow-lg shadow-blue-100 transition-all transform active:scale-95 group-hover:scale-105"
       >
         <Plus size={20} strokeWidth={3} />
       </button>

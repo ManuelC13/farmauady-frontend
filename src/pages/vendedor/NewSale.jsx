@@ -2,14 +2,19 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import ProductCard from "../../components/ProductCard";
-import { Search, FileText, ShoppingCart, X, Receipt, Plus, Loader2, Package } from "lucide-react";
+import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader2, Package } from "lucide-react";
 import { getProductsRequest } from "../../api/product/product_routes";
+import { createSaleRequest } from "../../api/sales/sales_routes";
+import { useToast } from "../../context/ToastContext";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
+  const [confirming, setConfirming] = useState(false);
+  const [lastSale, setLastSale] = useState(null); // Guarda la última venta confirmada
+  const toast = useToast();
 
   const fetchProducts = async (searchTerm = "") => {
     setLoading(true);
@@ -34,7 +39,13 @@ function NewSale() {
     fetchProducts();
   }, []);
 
+  // Cantidad en carrito de un producto
+  const cartQty = (productId) =>
+    cart.find((i) => i.id === productId)?.quantity ?? 0;
+
   const addToCart = (product) => {
+    const inCart = cartQty(product.id);
+    if (inCart >= product.stock) return; // no exceder stock real
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
@@ -46,6 +57,32 @@ function NewSale() {
     });
   };
 
+  // Aumenta la cantidad en el carrito (respeta el stock)
+  const increaseQty = (item) => {
+    if (item.quantity >= item.stock) return;
+    setCart((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i))
+    );
+  };
+
+  // Disminuye la cantidad; si llega a 0, elimina del carrito
+  const decreaseQty = (item) => {
+    setCart((prev) =>
+      item.quantity <= 1
+        ? prev.filter((i) => i.id !== item.id)
+        : prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i))
+    );
+  };
+
+  // Edita la cantidad directamente con eñ input numérico
+  const updateQty = (item, value) => {
+    const qty = Math.max(1, Math.min(item.stock, parseInt(value) || 1));
+    setCart((prev) =>
+      prev.map((i) => (i.id === item.id ? { ...i, quantity: qty } : i))
+    );
+  };
+
+  // Elimina el producto completo del carrito
   const removeFromCart = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
@@ -57,6 +94,61 @@ function NewSale() {
     const value = e.target.value;
     setSearch(value);
     fetchProducts(value);
+  };
+
+  const handleConfirmSale = async () => {
+    if (cart.length === 0) return;
+    setConfirming(true);
+    try {
+      const payload = {
+        items: cart.map((item) => ({
+          id_product: item.id,
+          quantity: item.quantity,
+        })),
+        payment_method: "efectivo",
+      };
+      const response = await createSaleRequest(payload);
+      const sale = response.data;
+      setLastSale(sale);   // Guardamos la venta ANTES de vaciar el carrito
+      setCart([]);
+      toast.success(
+        `Venta #${sale.folio} registrada por $${parseFloat(sale.total).toFixed(2)}`
+      );
+      fetchProducts(search);
+    } catch (error) {
+      const detail = error?.response?.data?.detail || "Error al registrar la venta. Intenta de nuevo.";
+      toast.error(detail);
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  // Imprime el ticket en consola y limpia la última venta (CONTENIDO DE PRUEBA)
+  const handlePrintTicket = () => {
+    if (!lastSale) return;
+    const separator = "================================";
+    const lines = [
+      separator,
+      `       FARMAUADY — TICKET DE VENTA`,
+      separator,
+      `Folio:    ${lastSale.folio}`,
+      `Fecha:    ${new Date(lastSale.sale_date).toLocaleString("es-MX")}`,
+      `Vendedor: ${lastSale.seller_name}`,
+      `Pago:     ${lastSale.payment_method ?? "Efectivo"}`,
+      separator,
+      ...lastSale.details.map(
+        (d) =>
+          `  ${d.product_name.padEnd(20)} x${d.quantity}  $${parseFloat(d.subtotal).toFixed(2)}`
+      ),
+      separator,
+      `  TOTAL:                    $${parseFloat(lastSale.total).toFixed(2)}`,
+      separator,
+      `       ¡Gracias por su compra!`,
+      separator,
+    ];
+    console.log(lines.join("\n"));
+    toast.success(`Ticket #${lastSale.folio} impreso en consola`);
+    setLastSale(null); // Limpia para que el botón vuelva a desactivarse
   };
 
   return (
@@ -118,7 +210,12 @@ function NewSale() {
                 ) : products.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {products.map((product) => (
-                      <ProductCard key={product.id} product={product} onAdd={addToCart} />
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        onAdd={addToCart}
+                        cartQty={cartQty(product.id)}
+                      />
                     ))}
                   </div>
                 ) : (
@@ -157,21 +254,49 @@ function NewSale() {
                   </div>
                 ) : (
                   cart.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center group border-b border-gray-100 py-4 last:border-0 animate-in fade-in slide-in-from-right-4 duration-300">
-                      <div className="flex flex-col gap-0.5">
-                        <h4 className="font-bold text-gray-800 text-sm">{item.name}</h4>
-                        <p className="text-[11px] text-gray-400 font-bold">
-                          {item.quantity} x ${item.price.toFixed(2)}
-                        </p>
+                    <div key={item.id} className="flex flex-col border-b border-gray-100 py-4 last:border-0 gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                      {/* Nombre + precio total + eliminar */}
+                      <div className="flex justify-between items-start">
+                        <h4 className="font-bold text-gray-800 text-sm leading-tight flex-1 pr-2">{item.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <span className="font-bold text-blue-600 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="bg-red-100/50 text-red-400 p-1 rounded-full hover:bg-red-100 transition-colors"
+                            title="Eliminar del carrito"
+                          >
+                            <Trash2 size={13} strokeWidth={2.5} />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className="font-bold text-gray-800 text-sm">${(item.price * item.quantity).toFixed(2)}</span>
-                        <button 
-                          onClick={() => removeFromCart(item.id)}
-                          className="bg-red-100/50 text-red-500 p-1.5 rounded-full hover:bg-red-100 transition-colors shadow-sm"
-                        >
-                          <X size={14} strokeWidth={3} />
-                        </button>
+                      {/* Stepper de cantidad */}
+                      <div className="flex items-center justify-between">
+                        <p className="text-[11px] text-gray-400 font-medium">
+                          ${item.price.toFixed(2)} c/u {/*&bull; stock: {item.stock}*/}
+                        </p>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => decreaseQty(item)}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-600 w-6 h-6 rounded-md flex items-center justify-center transition-colors"
+                          >
+                            <Minus size={12} strokeWidth={3} />
+                          </button>
+                          <input
+                            type="number"
+                            min={1}
+                            max={item.stock}
+                            value={item.quantity}
+                            onChange={(e) => updateQty(item, e.target.value)}
+                            className="w-10 text-center text-sm font-bold text-gray-800 border border-gray-200 rounded-md py-0.5 focus:outline-none focus:ring-1 focus:ring-blue-300"
+                          />
+                          <button
+                            onClick={() => increaseQty(item)}
+                            disabled={item.quantity >= item.stock}
+                            className="bg-blue-100 hover:bg-blue-200 disabled:opacity-40 disabled:cursor-not-allowed text-blue-600 w-6 h-6 rounded-md flex items-center justify-center transition-colors"
+                          >
+                            <Plus size={12} strokeWidth={3} />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -186,11 +311,23 @@ function NewSale() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transform transition-all active:scale-95 shadow-lg shadow-blue-100 text-sm">
-                    <Plus size={18} strokeWidth={3} />
-                    Confirmar venta
+                  <button
+                    onClick={handleConfirmSale}
+                    disabled={cart.length === 0 || confirming}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2.5 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transform transition-all active:scale-95 shadow-lg shadow-blue-100 text-sm"
+                  >
+                    {confirming ? (
+                      <Loader2 size={18} className="animate-spin" />
+                    ) : (
+                      <Plus size={18} strokeWidth={3} />
+                    )}
+                    {confirming ? "Procesando..." : "Confirmar venta"}
                   </button>
-                  <button className="bg-[#B8D4B0] text-white py-2.5 px-4 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed opacity-80 text-sm">
+                  <button
+                    onClick={handlePrintTicket}
+                    disabled={!lastSale}
+                    className="bg-emerald-500 hover:bg-emerald-600 disabled:bg-[#B8D4B0] disabled:cursor-not-allowed text-white py-2.5 px-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all active:scale-95 text-sm"
+                  >
                     <Receipt size={18} strokeWidth={2.5} />
                     Generar ticket
                   </button>

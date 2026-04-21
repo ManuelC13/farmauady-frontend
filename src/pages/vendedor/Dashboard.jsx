@@ -4,8 +4,6 @@ import { useAuth } from "../../context/AuthContext";
 import RecentSalesTable from "../../components/RecentSalesTable";
 import { Plus, Search, DollarSign, Pill } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import NewSale from "./NewSale";
-
 
 function DashboardVendedor() {
     const { user } = useAuth();
