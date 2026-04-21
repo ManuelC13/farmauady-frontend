@@ -10,6 +10,7 @@ function RegisterSale() {
 
     const [filterOpen, setFilterOpen] = useState(false);
     const [selectedFilter, setSelectedFilter] = useState("Esta semana");
+    const [searchTerm, setSearchTerm] = useState("");
 
     const filterOptions = ["Hoy", "Esta semana", "Este mes", "Este año"];
 
@@ -85,6 +86,8 @@ function RegisterSale() {
                                 />
                                 <input
                                     type="text"
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
                                     placeholder="Buscar por ID de venta"
                                     className="pl-11 pr-4 py-2 bg-white border border-blue-400 rounded-lg text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-200 transition shadow-sm h-full"
                                 />
@@ -93,7 +96,10 @@ function RegisterSale() {
 
                         {/* Tabla */}
                         <div className="flex-1 min-h-0">
-                            <SalesRecordTable />
+                            <SalesRecordTable 
+                                searchTerm={searchTerm}
+                                timeFilter={selectedFilter}
+                            />
                         </div>
                     </div>
                 </main>
