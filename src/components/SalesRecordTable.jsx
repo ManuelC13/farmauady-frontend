@@ -2,8 +2,7 @@ import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info } from "lucid
 import { useState, useEffect } from "react";
 import { getAllSalesRequest } from "../api/sales/sales_routes";
 import { useToast } from "../context/ToastContext";
-import { pdf } from "@react-pdf/renderer";
-import TicketPDF from "./pdf/TicketPDF";
+import { generateTicketPDF } from "./pdf/TicketPDF";
 
 function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState(propSales || []);
@@ -87,7 +86,8 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
       return;
     }
     try {
-      const blob = await pdf(<TicketPDF sale={sale.rawSale} />).toBlob();
+      const blob = await generateTicketPDF(sale.rawSale);
+      if (!blob) throw new Error("Error al generar PDF");
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

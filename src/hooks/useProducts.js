@@ -6,7 +6,6 @@ import {
   updateProductRequest, 
   deleteProductRequest 
 } from "../api/product/product_routes";
-import { data } from "autoprefixer";
 
 export function useProducts() {
   const [products, setProducts] = useState([]);

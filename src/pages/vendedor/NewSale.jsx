@@ -6,8 +6,7 @@ import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader
 import { getSaleProductsRequest } from "../../api/product/product_routes";
 import { createSaleRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
-import { pdf } from "@react-pdf/renderer";
-import TicketPDF from "../../components/pdf/TicketPDF";
+import { generateTicketPDF } from "../../components/pdf/TicketPDF";
 
 function NewSale() {
   const [products, setProducts] = useState([]);
@@ -129,7 +128,8 @@ function NewSale() {
   const handlePrintTicket = async () => {
     if (!lastSale) return;
     try {
-      const blob = await pdf(<TicketPDF sale={lastSale} />).toBlob();
+      const blob = await generateTicketPDF(lastSale);
+      if (!blob) throw new Error("Error al generar PDF");
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
