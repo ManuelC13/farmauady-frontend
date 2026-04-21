@@ -6,7 +6,7 @@ import ProductTable2 from "../../components/ProductTable2";
 import ProductModal from "../../components/ProductModal";
 import ConfirmModal from "../../components/ConfirmModal";
 import ManualExitModal from "../../components/ManualExitModal";
-import { Plus, Search, ArrowDownToLine, ArrowDownRight } from "lucide-react";
+import { Plus, Search, ArrowDownRight } from "lucide-react";
 
 function AdminProducts() {
   const { products, createProduct, updateProduct, deleteProduct } = useProducts();
@@ -19,9 +19,9 @@ function AdminProducts() {
 
   const filteredProducts = products.filter((product) => {
     const name = product.name?.toLowerCase();
-    const category = product.category?.name?.toLowerCase();
+    const sku = product.sku?.toLowerCase();
     const query = searchQuery.toLowerCase().trim();
-    return name.includes(query) || category.includes(query);
+    return name.includes(query) || sku.includes(query);
   });
 
   const handleEditClick = (product) => {
@@ -67,7 +67,7 @@ function AdminProducts() {
                 <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Buscar medicamentos o categoría"
+                  placeholder="Buscar productos por nombre o SKU"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 bg-white text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -91,7 +91,7 @@ function AdminProducts() {
                   }}
                   className="bg-primary text-white px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 whitespace-nowrap text-sm font-medium"
                 >
-                  <Plus size={18} /> Registrar medicamento
+                  <Plus size={18} /> Nuevo producto
                 </button>
               </div>
             </div>
@@ -109,8 +109,8 @@ function AdminProducts() {
               onClose={handleCloseDeleteModal}
               onConfirm={deleteProduct}
               itemId={deletingProduct?.id_product}
-              title="Eliminar Medicamento"
-              message={`¿Estás seguro de que deseas eliminar ${deletingProduct?.name}? Esta acción no se puede deshacer.`}
+              title="Eliminar Producto"
+              message={`¿Estás seguro de que deseas eliminar el producto ${deletingProduct?.name}? Esta acción no se puede deshacer.`}
             />
 
             <ManualExitModal

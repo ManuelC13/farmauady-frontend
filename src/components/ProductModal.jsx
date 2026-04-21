@@ -56,7 +56,7 @@ function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
       id_category:     Number(form.id_category),
       sale_price:      Number(form.sale_price),
       stock:           Number(form.stock),
-      expiration_date: form.expiration_date,
+      expiration_date: form.expiration_date || null,
       active:          form.active === "true",
       description:     form.description || null,
       batch:           form.batch || null,
@@ -187,14 +187,14 @@ function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
               {/* Fecha de caducidad */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Fecha de caducidad del lote <span className="text-red-500">*</span>
+                  Fecha de caducidad del lote{" "}
+                  <span className="text-gray-400 font-normal">(opcional)</span>
                 </label>
                 <input
                   type="date"
                   name="expiration_date"
                   value={form.expiration_date}
                   onChange={handleChange}
-                  required
                   className={`${inputBase} ${inputEnabled} text-gray-600`}
                 />
               </div>

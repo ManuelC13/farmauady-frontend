@@ -12,6 +12,8 @@ function Navbar() {
     "/vendedor/register-sale": "Registro de ventas",
     "/vendedor/products": "Productos",
     "/profile": "Mi perfil",
+    "/inventory": "Inventario de productos",
+    "/categories": "Categorías"
   };
 
   const page = routes[location.pathname] || "";

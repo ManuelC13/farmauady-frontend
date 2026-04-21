@@ -12,7 +12,8 @@ import {
   Boxes,
   User,
   LogOut,
-  Cross
+  Cross,
+  Tags
 } from "lucide-react";
 
 function Sidebar() {
@@ -32,6 +33,7 @@ function Sidebar() {
     { name: "Dashboard",             path: "/dashboard",              icon: LayoutGrid,       roles: ["Administrador"] },
     { name: "Gestión de usuarios",   path: "/users",                  icon: UsersRound,       roles: ["Administrador"] },
     { name: "Gestión de inventario", path: "/inventory",              icon: Archive,          roles: ["Administrador"] },
+    { name: "Categorías",            path: "/categories",             icon: Tags,             roles: ["Administrador"]},
     { name: "Historial de ventas",   path: "/sales",                  icon: BadgeDollarSign,  roles: ["Administrador"] },
     { name: "Reportes",              path: "/reports",                icon: TrendingUp,       roles: ["Administrador"] },
     { name: "Dashboard",             path: "/vendedor/dashboard",     icon: LayoutGrid,       roles: ["Vendedor"] },

@@ -15,13 +15,14 @@ function ProductTable({ products, onEdit, onDelete }) {
         {/* Header */}
         <thead>
           <tr className="border-b border-gray-300">
+            <th className="py-4 px-6 text-sm font-semibold text-gray-800">SKU</th>
             <th className="py-4 px-6 text-sm font-semibold text-gray-800">Medicamento</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Categoría</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Precio</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Existencias</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Caducidad</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Estado</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800 text-right">Acciones</th>
+            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Categoría</th>
+            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Precio</th>
+            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Existencias</th>
+            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Caducidad</th>
+            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Estado</th>
+            <th className="py-4 px-7 text-sm font-semibold text-gray-800 text-right">Acciones</th>
           </tr>
         </thead>
 
@@ -37,35 +38,42 @@ function ProductTable({ products, onEdit, onDelete }) {
             products.map((product) => (
               <tr key={product.id_product} className="border-b border-gray-300 hover:bg-secondary/10 transition">
 
+                {/* SKU */}
+                <td className="py-4 px-6 text-sm font-medium text-gray-800">
+                  {product.sku}
+                </td>
+
                 {/* Medicamento */}
                 <td className="py-4 px-6 text-sm font-medium text-gray-800">
                   {product.name}
                 </td>
 
                 {/* Categoría */}
-                <td className="py-4 px-4 text-sm text-gray-700">
+                <td className="py-4 px-6 text-sm text-gray-700">
                   {product.category?.name}
                 </td>
 
                 {/* Precio */}
-                <td className="py-4 px-4 text-sm text-gray-700">
+                <td className="py-4 px-6 text-sm text-gray-700">
                   ${Number(product.sale_price).toFixed(2)}
                 </td>
 
                 {/* Existencias */}
-                <td className="py-4 px-4">
+                <td className="py-4 px-6">
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold ${getStockStyle(product.stock, product.minimum_stock)}`}>
                     {product.stock} u.
                   </span>
                 </td>
 
                 {/* Caducidad */}
-                <td className="py-4 px-4 text-sm text-gray-700">
-                  {product.expiration_date}
+                <td className="py-4 px-6 text-sm text-gray-700">
+                  {product.expiration_date ?? (
+                    <span className="text-gray-400 italic">No aplica</span>
+                  )}
                 </td>
 
                 {/* Estado */}
-                <td className="py-4 px-4">
+                <td className="py-4 px-6">
                   {product.active ? (
                     <span className="inline-flex items-center px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-medium">
                       Activo
