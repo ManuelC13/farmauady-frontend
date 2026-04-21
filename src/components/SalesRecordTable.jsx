@@ -1,6 +1,6 @@
 import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getAllSalesRequest } from "../api/sales/sales_routes";
+import { getMySalesRequest } from "../api/sales/sales_routes";
 import { useToast } from "../context/ToastContext";
 
 function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }) {
@@ -18,7 +18,7 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
     const fetchAllSales = async () => {
       try {
         setLoading(true);
-        const { data } = await getAllSalesRequest();
+        const { data } = await getMySalesRequest();
         const mappedSales = data.map(sale => ({
           id: sale.folio,
           datetime: new Date(sale.sale_date).toLocaleString("es-MX", { 
