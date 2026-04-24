@@ -14,7 +14,8 @@ function Navbar() {
     "/profile": "Mi perfil",
     "/inventory": "Inventario de productos",
     "/categories": "Categorías",
-    "/sales": "Historial de ventas"
+    "/sales": "Historial de ventas",
+    "/reports": "Reportes"
   };
 
   const page = routes[location.pathname] || "";

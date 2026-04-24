@@ -13,3 +13,6 @@ export const getMySalesRequest = () =>
 // Para el admin — todas las ventas
 export const getAllSalesAdminRequest = () =>
     api.get("/sales/all");
+
+export const getFilteredSalesRequest = (params) =>
+    api.get("/sales/filtered", { params });
