@@ -8,8 +8,8 @@ function CategoryTable({ categories, onEdit, onDelete }) {
         {/* Header */}
         <thead>
           <tr className="border-b border-gray-300">
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Categoría</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800 text-right">Acciones</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Categoría</th>
+            <th className="py-4 px-7 text-xs font-semibold text-gray-800 tracking-wider uppercase text-right">Acciones</th>
           </tr>
         </thead>
 

@@ -48,7 +48,7 @@ function RecentSalesTable({ sales: propSales }) {
         <h2 className="text-xl font-bold text-gray-800">Ventas recientes</h2>
         <button 
         onClick={() => navigate("/vendedor/register-sale")}
-        className="px-4 py-1.5 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+        className="px-4 py-1.5 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
           Ver todo
         </button>
       </div>

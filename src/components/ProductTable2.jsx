@@ -15,14 +15,14 @@ function ProductTable({ products, onEdit, onDelete }) {
         {/* Header */}
         <thead>
           <tr className="border-b border-gray-300">
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">SKU</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Medicamento</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Categoría</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Precio</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Existencias</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Caducidad</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Estado</th>
-            <th className="py-4 px-7 text-sm font-semibold text-gray-800 text-right">Acciones</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Sku</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Medicamento</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Categoría</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Precio</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Existencias</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Caducidad</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Estado</th>
+            <th className="py-4 px-7 text-xs font-semibold text-gray-800 tracking-wider uppercase">Acciones</th>
           </tr>
         </thead>
 
@@ -86,7 +86,7 @@ function ProductTable({ products, onEdit, onDelete }) {
                 </td>
 
                 {/* Acciones */}
-                <td className="py-4 px-6 text-right">
+                <td className="py-4 px-6">
                   <button
                     onClick={() => onEdit(product)}
                     className="p-2 rounded-lg hover:bg-secondary/10 text-primary transition cursor-pointer"
