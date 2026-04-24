@@ -14,15 +14,17 @@ export const getMySalesRequest = () =>
 export const getAllSalesAdminRequest = () =>
     api.get("/sales/all");
 
+export const getFilteredSalesRequest = (params) =>
+    api.get("/sales/filtered", { params });
+
+//__________________________________________
 //Endpoints para reservaciones de productos
-//Reserva los productos del carrito por 15 minutos
+//__________________________________________
 export const reserveInventoryRequest = (payload) =>
     api.post("/sales/reserve", payload);
 
-//Confirma la venta sobre las reservaciones activas
 export const confirmSaleRequest = (payload) =>
     api.post("/sales/confirm", payload);
 
-//Libera las reservaciones si el vendedor elimina todos los productos del carrito o se vence el tiempo
 export const releaseReservationRequest = (cartSessionId) =>
     api.delete(`/sales/reserve/${cartSessionId}`);

@@ -22,11 +22,11 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
         {/* Header */}
         <thead>
           <tr className="border-b border-gray-300">
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800">Usuario</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Rol</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Correo electrónico</th>
-            <th className="py-4 px-4 text-sm font-semibold text-gray-800">Estado</th>
-            <th className="py-4 px-6 text-sm font-semibold text-gray-800 text-right">Acciones</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider uppercase">Usuario</th>
+            <th className="py-4 px-4 text-xs font-semibold text-gray-800 tracking-wider uppercase">Rol</th>
+            <th className="py-4 px-4 text-xs font-semibold text-gray-800 tracking-wider uppercase">Correo electrónico</th>
+            <th className="py-4 px-4 text-xs font-semibold text-gray-800 tracking-wider uppercase">Estado</th>
+            <th className="py-4 px-6 text-xs font-semibold text-gray-800 tracking-wider text-right uppercase">Acciones</th>
           </tr>
         </thead>
 
@@ -80,11 +80,11 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
                 {/* Estado */}
                 <td className="py-4 px-4">
                   {user.status === "ACTIVO" ? (
-                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-green-100 text-green-600 text-sm font-medium">
+                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-green-100 text-green-600 text-xs font-medium">
                       {user.status}
                     </span>
                   ) : (
-                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-red-100 text-red-500 text-sm font-medium">
+                    <span className="inline-flex items-center px-4 py-1 rounded-full bg-red-100 text-red-500 text-xs font-medium">
                       {user.status}
                     </span>
                   )}

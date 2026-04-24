@@ -21,3 +21,6 @@ export const updateProductRequest = (id, product) =>
 
 export const deleteProductRequest = (id) =>
     api.delete(`/products/${id}`);
+
+export const getInventoryReportRequest = () =>
+    api.get("/products/inventory-report");

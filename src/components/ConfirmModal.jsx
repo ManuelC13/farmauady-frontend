@@ -8,7 +8,7 @@ function ConfirmModal({ isOpen, onClose, onConfirm, itemId, title, message }) {
       <div className="bg-background rounded-xl w-full max-w-md overflow-hidden shadow-xl">
 
         {/* Header */}
-        <div className="bg-warning px-6 py-4 flex items-center justify-between">
+        <div className="bg-danger px-6 py-4 flex items-center justify-between">
           <h2 className="text-white text-xl font-semibold">{title}</h2>
           <button
             onClick={onClose}
@@ -20,8 +20,8 @@ function ConfirmModal({ isOpen, onClose, onConfirm, itemId, title, message }) {
 
         {/* Cuerpo */}
         <div className="p-6 flex flex-col items-center gap-4 text-center">
-          <div className="w-14 h-14 rounded-full bg-warning/20 flex items-center justify-center">
-            <TriangleAlert size={30} className="text-warning" />
+          <div className="w-14 h-14 rounded-full bg-danger/20 flex items-center justify-center">
+            <TriangleAlert size={30} className="text-danger" />
           </div>
 
           <p className="text-gray-700 text-sm">{message}</p>
