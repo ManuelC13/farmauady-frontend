@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Sidebar from "../../components/Sidebar";
 import Navbar from "../../components/Navbar";
 import ProductCard from "../../components/ProductCard";
-import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader2, Package } from "lucide-react";
+import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader2, Package, Clock } from "lucide-react";
 import { getSaleProductsRequest } from "../../api/product/product_routes";
-import { createSaleRequest } from "../../api/sales/sales_routes";
+import { reserveInventoryRequest, confirmSaleRequest, releaseReservationRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
 import { generateTicketPDF } from "../../components/pdf/TicketPDF";
 
@@ -14,8 +14,16 @@ function NewSale() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
-  const [lastSale, setLastSale] = useState(null); // Guarda la última venta confirmada
+  const [lastSale, setLastSale] = useState(null);
   const toast = useToast();
+
+  const [cartSessionId] = useState(() => crypto.randomUUID());
+
+  const [reservationExpiry, setReservationExpiry] = useState(null);
+  const [countdown, setCountdown] = useState(null);
+  const countdownRef = useRef(null);
+  const [reserving, setReserving] = useState(false);
+  const reserveTimerRef = useRef(null);
 
   const fetchProducts = async (searchTerm = "") => {
     setLoading(true);
@@ -39,6 +47,73 @@ function NewSale() {
   useEffect(() => {
     fetchProducts();
   }, []);
+
+  //Cuenta regresiva: arranca cuando hay una reserva activa
+  useEffect(() => {
+    if (!reservationExpiry) {
+      setCountdown(null);
+      if (countdownRef.current) clearInterval(countdownRef.current);
+      return;
+    }
+
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((reservationExpiry - Date.now()) / 1000));
+      const m = String(Math.floor(diff / 60)).padStart(2, "0");
+      const s = String(diff % 60).padStart(2, "0");
+      setCountdown(`${m}:${s}`);
+      if (diff === 0) {
+        clearInterval(countdownRef.current);
+        setReservationExpiry(null);
+        setCountdown(null);
+        toast.error("La reserva expiró. Vuelve a agregar productos al carrito.");
+      }
+    };
+
+    tick();
+    countdownRef.current = setInterval(tick, 1000);
+    return () => clearInterval(countdownRef.current);
+  }, [reservationExpiry]);
+
+  
+  useEffect(() => {
+    if (reserveTimerRef.current) clearTimeout(reserveTimerRef.current);
+
+    if (cart.length === 0) {
+      // Carrito vacío: liberar reservas del backend silenciosamente
+      releaseReservationRequest(cartSessionId).catch(() => {});
+      setReservationExpiry(null);
+      return;
+    }
+
+    reserveTimerRef.current = setTimeout(async () => {
+      setReserving(true);
+      try {
+        const res = await reserveInventoryRequest({
+          cart_session_id: cartSessionId,
+          items: cart.map((item) => ({
+            id_product: item.id,
+            quantity: item.quantity,
+          })),
+          ttl_minutes: 15,    //<- Reserva por 15 minutos los productos del carrito
+        });
+        
+        const raw = res.data.expires_at;
+        const utcString = raw.endsWith("Z") ? raw : raw + "Z";
+        setReservationExpiry(new Date(utcString));
+
+      } catch (error) {
+        const detail =
+          error?.response?.data?.detail ||
+          "No se pudo reservar el stock. Intenta de nuevo.";
+        toast.error(detail);
+      } finally {
+        setReserving(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(reserveTimerRef.current);
+  }, [cart]);
+
 
   // Cantidad en carrito de un producto
   const cartQty = (productId) =>
@@ -101,23 +176,24 @@ function NewSale() {
     if (cart.length === 0) return;
     setConfirming(true);
     try {
-      const payload = {
-        items: cart.map((item) => ({
-          id_product: item.id,
-          quantity: item.quantity,
-        })),
+      const response = await confirmSaleRequest({
+        cart_session_id: cartSessionId,
         payment_method: "efectivo",
-      };
-      const response = await createSaleRequest(payload);
+      });
+
       const sale = response.data;
-      setLastSale(sale);   // Guardamos la venta ANTES de vaciar el carrito
+      setLastSale(sale);
       setCart([]);
+      setReservationExpiry(null);
       toast.success(
         `Venta #${sale.folio} registrada por $${parseFloat(sale.total).toFixed(2)}`
       );
       fetchProducts(search);
     } catch (error) {
-      const detail = error?.response?.data?.detail || "Error al registrar la venta. Intenta de nuevo.";
+      const detail =
+        error?.response?.data?.detail ||
+        "Error al registrar la venta. Intenta de nuevo.";
+        toast.error("Error al registrar la venta. Intenta de nuevo.");
       toast.error(detail);
     } finally {
       setConfirming(false);
@@ -231,7 +307,8 @@ function NewSale() {
                   </div>
                   <h2 className="text-2xl font-black text-blue-600 tracking-tight">Carrito</h2>
                 </div>
-                <div className="bg-blue-100/50 px-4 py-1.5 rounded-full border border-blue-200/50">
+                <div className="bg-blue-100/50 px-4 py-1.5 rounded-full border border-blue-200/50 flex items-center gap-2">
+                  {reserving && <Loader2 size={11} className="animate-spin text-blue-500" />}
                   <span className="text-blue-600 font-bold text-xs uppercase tracking-tight">
                     {totalItems} Productos
                   </span>
@@ -302,6 +379,17 @@ function NewSale() {
                   <span className="font-medium text-gray-500 text-base tracking-tight">Total</span>
                   <span className="text-xl font-bold text-blue-600 tracking-tighter">${total.toFixed(2)}</span>
                 </div>
+
+                {/* Contador de reserva activa */}
+                {countdown && (
+                  <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-xl px-4 py-2">
+                    <Clock size={14} className="text-amber-500 shrink-0" />
+                    <p className="text-xs font-semibold text-amber-700">
+                      Reserva activa — expira en{" "}
+                      <span className="font-black tabular-nums">{countdown}</span>
+                    </p>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-3">
                   <button

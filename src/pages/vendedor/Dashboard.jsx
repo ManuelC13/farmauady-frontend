@@ -4,10 +4,25 @@ import { useAuth } from "../../context/AuthContext";
 import RecentSalesTable from "../../components/RecentSalesTable";
 import { Plus, Search, DollarSign, Pill } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getDailyStatsRequest } from "../../api/sales/sales_routes";
 
 function DashboardVendedor() {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [stats, setStats] = useState({ total_sales: 0, items_sold: 0 });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await getDailyStatsRequest();
+                setStats(res.data);
+            } catch (error) {
+                toast.error("Error al obtener estadísticas");
+            }
+        };
+        fetchStats();
+    }, []);
 
     const actualDate = new Date();
 
@@ -78,7 +93,9 @@ function DashboardVendedor() {
                                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                                     <div>
                                         <p className="text-gray-400 text-sm font-semibold mb-1">Ventas del día</p>
-                                        <p className="text-2xl font-bold text-gray-800">$3,450.00</p>
+                                        <p className="text-2xl font-bold text-gray-800">
+                                            ${new Intl.NumberFormat("es-MX", { minimumFractionDigits: 2 }).format(stats.total_sales)}
+                                        </p>
                                     </div>
                                     <div className="bg-blue-50 p-2 rounded-lg">
                                         <DollarSign className="text-blue-500" size={24} />
@@ -89,7 +106,7 @@ function DashboardVendedor() {
                                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                                     <div>
                                         <p className="text-gray-400 text-sm font-semibold mb-1">Artículos vendidos</p>
-                                        <p className="text-2xl font-bold text-gray-800">26</p>
+                                        <p className="text-2xl font-bold text-gray-800">{stats.items_sold}</p>
                                     </div>
                                     <div className="bg-green-50 p-2 rounded-lg">
                                         <Pill className="text-green-500" size={24} />
