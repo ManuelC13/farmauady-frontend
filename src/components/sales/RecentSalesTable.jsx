@@ -1,8 +1,8 @@
 import { Eye, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getRecentSalesRequest } from "../api/sales/sales_routes";
+import { getRecentSalesRequest } from "../../api/sales/sales_routes";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "../context/ToastContext";
+import { useToast } from "../../context/ToastContext";
 
 function RecentSalesTable({ sales: propSales }) {
   const navigate = useNavigate();

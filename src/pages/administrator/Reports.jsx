@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import InventoryReportTable from "../../components/InventoryReportTable";
-import SalesReportTable from "../../components/SalesReportTable";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import InventoryReportTable from "../../components/inventory/InventoryReportTable";
+import SalesReportTable from "../../components/sales/SalesReportTable";
 
 function Reports() {
   const today = new Date().toISOString().split("T")[0];

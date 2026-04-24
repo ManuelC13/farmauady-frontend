@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import { FileDown, Loader2, Info } from "lucide-react";
-import { getFilteredSalesRequest } from "../api/sales/sales_routes";
-import { SalesReportPDF } from "../components/pdf/SalesReportPDF";
-import { useToast } from "../context/ToastContext";
-import { useUsers } from "../hooks/useUsers";
-import { useCategories } from "../hooks/useCategories";
+import { getFilteredSalesRequest } from "../../api/sales/sales_routes";
+import { SalesReportPDF } from "../pdf/SalesReportPDF";
+import { useToast } from "../../context/ToastContext";
+import { useUsers } from "../../hooks/useUsers";
+import { useCategories } from "../../hooks/useCategories";
 
 function SalesReportTable({
   startDate, endDate, sellerId, categoryId, appliedFilters,
   onStartDateChange, onEndDateChange, onSellerChange, onCategoryChange, onFilter,
 }) {
-  const [sales, setSales]     = useState([]);
+  const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const { users }      = useUsers();
+  const { users } = useUsers();
   const { categories } = useCategories();
 
   // Solo vendedores en el dropdown
@@ -24,9 +24,9 @@ function SalesReportTable({
       try {
         setLoading(true);
         const params = {
-          start_date:  appliedFilters.start_date,
-          end_date:    appliedFilters.end_date,
-          ...(appliedFilters.seller_id   && { seller_id:   appliedFilters.seller_id }),
+          start_date: appliedFilters.start_date,
+          end_date: appliedFilters.end_date,
+          ...(appliedFilters.seller_id && { seller_id: appliedFilters.seller_id }),
           ...(appliedFilters.category_id && { category_id: appliedFilters.category_id }),
         };
         const { data } = await getFilteredSalesRequest(params);

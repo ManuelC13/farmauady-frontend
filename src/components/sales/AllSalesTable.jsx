@@ -1,7 +1,7 @@
 import { Printer, Banknote, CreditCard, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getAllSalesAdminRequest } from "../api/sales/sales_routes";
-import { useToast } from "../context/ToastContext";
+import { getAllSalesAdminRequest } from "../../api/sales/sales_routes";
+import { useToast } from "../../context/ToastContext";
 
 function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState([]);

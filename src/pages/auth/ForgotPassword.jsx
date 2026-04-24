@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Cross } from "lucide-react";
-import PrimaryButton from "../../components/PrimaryButton";
+import PrimaryButton from "../../components/common/ui/PrimaryButton";
 import { forgotPasswordRequest } from "../../api/auth/auth_routes";
 
 const ForgotPassword = () => {

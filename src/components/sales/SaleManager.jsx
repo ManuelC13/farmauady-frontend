@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Search, Package, Loader2 } from "lucide-react";
-import { getSaleProductsRequest } from "../api/product/product_routes";
-import ProductCard from "./ProductCard";
+import { getSaleProductsRequest } from "../../api/product/product_routes";
+import ProductCard from "../product/ProductCard";
 
 function SaleManager() {
     const [products, setProducts] = useState([]);
@@ -63,9 +63,9 @@ function SaleManager() {
                 ) : products.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {products.map((product) => (
-                            <ProductCard 
-                                key={product.id} 
-                                product={product} 
+                            <ProductCard
+                                key={product.id}
+                                product={product}
                                 onAdd={() => console.log("Añadido:", product.name)}
                             />
                         ))}

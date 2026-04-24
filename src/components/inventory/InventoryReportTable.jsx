@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FileDown, Loader2 } from "lucide-react";
-import { getInventoryReportRequest } from "../api/product/product_routes"
-import { useToast } from "../context/ToastContext";
-import { InventoryReportPDF } from "../components/pdf/InventoryReportPDF";
+import { getInventoryReportRequest } from "../../api/product/product_routes"
+import { useToast } from "../../context/ToastContext";
+import { InventoryReportPDF } from "../pdf/InventoryReportPDF";
 
 function InventoryReportTable() {
   const [products, setProducts] = useState([]);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
-import { useCategories } from "../hooks/useCategories";
+import { useCategories } from "../../hooks/useCategories";
 
 function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
 

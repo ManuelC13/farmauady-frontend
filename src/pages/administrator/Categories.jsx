@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useCategories } from "../../hooks/useCategories";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import CategoryTable from "../../components/CategoryTable";
-import CategoryModal from "../../components/CategoryModal";
-import ConfirmModal from "../../components/ConfirmModal";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import CategoryTable from "../../components/product/CategoryTable";
+import CategoryModal from "../../components/product/CategoryModal";
+import ConfirmModal from "../../components/common/modals/ConfirmModal";
 import { Plus, Search } from "lucide-react";
 
 function Categories() {

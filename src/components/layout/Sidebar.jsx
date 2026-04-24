@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import ModalConfirmation from "./ModalConfirmation";
+import { useAuth } from "../../context/AuthContext";
+import ModalConfirmation from "../common/modals/ModalConfirmation";
 import { useState } from "react";
 import {
   LayoutGrid,

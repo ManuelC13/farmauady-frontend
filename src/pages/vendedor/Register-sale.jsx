@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import SalesRecordTable from "../../components/SalesRecordTable";
+import SalesRecordTable from "../../components/sales/SalesRecordTable";
 import { ListFilter, Search, ChevronDown } from "lucide-react";
 
 function RegisterSale() {

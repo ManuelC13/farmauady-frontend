@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Key, X, Lock, Eye, EyeOff } from "lucide-react";
-import { changePasswordRequest } from "../api/user/user_routes";
-import { useToast } from "../context/ToastContext";
+import { changePasswordRequest } from "../../api/user/user_routes";
+import { useToast } from "../../context/ToastContext";
 
 function PasswordField({ label, value, onChange, show, onToggle }) {
   return (

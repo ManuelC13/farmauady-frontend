@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useProducts } from "../../hooks/useProducts"
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import ProductTable2 from "../../components/ProductTable2";
-import ProductModal from "../../components/ProductModal";
-import ConfirmModal from "../../components/ConfirmModal";
-import ManualExitModal from "../../components/ManualExitModal";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import ProductTable2 from "../../components/product/ProductTable2";
+import ProductModal from "../../components/product/ProductModal";
+import ConfirmModal from "../../components/common/modals/ConfirmModal";
+import ManualExitModal from "../../components/inventory/ManualExitModal";
 import { Plus, Search, ArrowDownRight } from "lucide-react";
 
 function AdminProducts() {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
-import { usePasswordValidation } from "../hooks/usePasswordValidation";
+import { usePasswordValidation } from "../../hooks/usePasswordValidation";
 
 function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
 

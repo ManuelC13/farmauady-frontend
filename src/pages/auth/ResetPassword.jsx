@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { Cross, Eye, EyeOff, CheckCircle } from "lucide-react";
-import PrimaryButton from "../../components/PrimaryButton";
+import PrimaryButton from "../../components/common/ui/PrimaryButton";
 import { resetPasswordRequest } from "../../api/auth/auth_routes";
 
 const ResetPassword = () => {

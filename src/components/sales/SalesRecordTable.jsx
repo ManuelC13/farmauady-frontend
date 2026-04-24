@@ -1,8 +1,8 @@
 import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getMySalesRequest } from "../api/sales/sales_routes";
-import { useToast } from "../context/ToastContext";
-import { generateTicketPDF } from "./pdf/TicketPDF";
+import { getMySalesRequest } from "../../api/sales/sales_routes";
+import { useToast } from "../../context/ToastContext";
+import { generateTicketPDF } from "../pdf/TicketPDF";
 
 function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState(propSales || []);
@@ -15,16 +15,16 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
       setLoading(false);
       return;
     }
-    
+
     const fetchAllSales = async () => {
       try {
         setLoading(true);
         const { data } = await getMySalesRequest();
         const mappedSales = data.map(sale => ({
           id: sale.folio,
-          datetime: new Date(sale.sale_date).toLocaleString("es-MX", { 
-            day: '2-digit', month: '2-digit', year: 'numeric', 
-            hour: '2-digit', minute: '2-digit' 
+          datetime: new Date(sale.sale_date).toLocaleString("es-MX", {
+            day: '2-digit', month: '2-digit', year: 'numeric',
+            hour: '2-digit', minute: '2-digit'
           }),
           rawDate: new Date(sale.sale_date),
           items: sale.details.reduce((sum, item) => sum + item.quantity, 0),
@@ -50,13 +50,13 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
     if (searchTerm && !sale.id.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
-    
+
     // Filtrar por fecha
     if (timeFilter && sale.rawDate) {
       const now = new Date();
       const saleDate = sale.rawDate;
       const msPerDay = 24 * 60 * 60 * 1000;
-      
+
       switch (timeFilter) {
         case "Hoy":
           if (saleDate.toDateString() !== now.toDateString()) return false;
@@ -75,7 +75,7 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
           break;
       }
     }
-    
+
     return true;
   });
 

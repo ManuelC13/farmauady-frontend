@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { Search, X } from "lucide-react";
-import { createManualExitRequest } from "../api/product/inventory_routes";
+import { createManualExitRequest } from "../../api/product/inventory_routes";
 
 const MOTIVOS = [
   { label: "Daño",       value: "SALIDA"     },

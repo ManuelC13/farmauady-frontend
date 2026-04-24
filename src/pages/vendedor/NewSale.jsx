@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import ProductCard from "../../components/ProductCard";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import ProductCard from "../../components/product/ProductCard";
 import { Search, FileText, ShoppingCart, X, Receipt, Plus, Minus, Trash2, Loader2, Package, Clock } from "lucide-react";
 import { getSaleProductsRequest } from "../../api/product/product_routes";
 import { reserveInventoryRequest, confirmSaleRequest, releaseReservationRequest } from "../../api/sales/sales_routes";

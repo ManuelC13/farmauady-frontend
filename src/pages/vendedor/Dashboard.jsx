@@ -1,7 +1,7 @@
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
 import { useAuth } from "../../context/AuthContext";
-import RecentSalesTable from "../../components/RecentSalesTable";
+import RecentSalesTable from "../../components/sales/RecentSalesTable";
 import { Plus, Search, DollarSign, Pill } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";

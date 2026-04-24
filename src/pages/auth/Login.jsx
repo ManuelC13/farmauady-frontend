@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { useToast } from "../../context/ToastContext";
-import PrimaryButton from "../../components/PrimaryButton";
+import PrimaryButton from "../../components/common/ui/PrimaryButton";
 import { Cross, Eye, EyeOff } from "lucide-react";
 
 import LoginImg from "../../assets/login_image.webp";

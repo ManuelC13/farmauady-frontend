@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useUsers } from "../../hooks/useUsers";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import UserTable from "../../components/UserTable";
-import UserModal from "../../components/UserModal";
-import ConfirmModal from "../../components/ConfirmModal";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import UserTable from "../../components/user/UserTable";
+import UserModal from "../../components/user/UserModal";
+import ConfirmModal from "../../components/common/modals/ConfirmModal";
 import { Plus, Search } from "lucide-react";
 
 function Users() {

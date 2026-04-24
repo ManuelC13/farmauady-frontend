@@ -1,9 +1,9 @@
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+import Sidebar from "../components/layout/Sidebar";
+import Navbar from "../components/layout/Navbar";
 import { useAuth } from "../context/AuthContext";
 import { useState, useEffect } from "react";
 import { User, Mail, UserCircle, Key, Edit, Save, X } from "lucide-react";
-import ChangePasswordModal from "../components/ChangePasswordModal";
+import ChangePasswordModal from "../components/user/ChangePasswordModal";
 import { updateOwnProfileRequest } from "../api/user/user_routes";
 import { useToast } from "../context/ToastContext";
 

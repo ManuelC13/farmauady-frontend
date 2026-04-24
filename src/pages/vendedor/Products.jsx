@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import ProductTable from "../../components/ProductTable";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import ProductTable from "../../components/product/ProductTable";
 import { ListFilter, Search, ChevronDown, Loader2 } from "lucide-react";
 import { getProductsRequest, getCategoriesRequest } from "../../api/product/product_routes";
 import { useToast } from "../../context/ToastContext";

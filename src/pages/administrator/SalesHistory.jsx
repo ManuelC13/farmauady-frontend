@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Sidebar from "../../components/Sidebar";
-import Navbar from "../../components/Navbar";
-import AllSalesTable from "../../components/AllSalesTable";
+import Sidebar from "../../components/layout/Sidebar";
+import Navbar from "../../components/layout/Navbar";
+import AllSalesTable from "../../components/sales/AllSalesTable";
 import { ListFilter, Search, ChevronDown } from "lucide-react";
 
 const filterOptions = ["Hoy", "Esta semana", "Este mes", "Este año"];

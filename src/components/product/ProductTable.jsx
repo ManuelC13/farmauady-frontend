@@ -1,7 +1,7 @@
 import { Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getProductsRequest } from "../api/product/product_routes";
-import { useToast } from "../context/ToastContext";
+import { getProductsRequest } from "../../api/product/product_routes";
+import { useToast } from "../../context/ToastContext";
 
 function ProductTable({ products: propProducts, searchTerm = "", categoryFilter = "Todas", statusFilter = "Todos" }) {
   const [products, setProducts] = useState(propProducts || []);
