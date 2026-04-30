@@ -5,10 +5,10 @@ export const getSaleProductsRequest = (search = "") =>
     api.get("/products/sale", { params: { search } });
 
 export const getProductsRequest = () =>
-    api.get("/products");
+    api.get("/products/");
 
 export const getCategoriesRequest = () =>
-    api.get("/categories");
+    api.get("/categories/");
 
 export const getProductRequest = (id) =>
     api.get(`/products/${id}`);

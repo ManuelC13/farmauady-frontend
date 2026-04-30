@@ -7,6 +7,7 @@ import { getProductsRequest, getCategoriesRequest } from "../../api/product/prod
 import { useToast } from "../../context/ToastContext";
 
 function Products() {
+  const toast = useToast();
   // Estados para la categoria
   const [catOpen, setCatOpen] = useState(false);
   const [selectedCat, setSelectedCat] = useState("Todas");

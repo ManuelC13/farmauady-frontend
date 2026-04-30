@@ -1,7 +1,7 @@
 import { api } from "../axios";
 
 export const getUsersRequest = () =>
-    api.get("/users");
+    api.get("/users/");
 
 export const updateOwnProfileRequest = (user) =>
     api.put("/users/me", user);
