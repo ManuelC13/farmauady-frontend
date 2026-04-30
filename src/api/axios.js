@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const api = axios.create({
-    baseURL: "http://localhost:8000/",
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -19,7 +19,7 @@ api.interceptors.response.use(
             originalRequest._retry = true;
             try {
                 console.info("Refrescando token...");
-                await axios.post("http://localhost:8000/auth/refresh", {}, { withCredentials: true });
+                await axios.post(`${import.meta.env.VITE_API_URL}/auth/refresh`, {}, { withCredentials: true });
                 console.info("Token actualizado exitosamente");
                 return api(originalRequest);
             } catch (refreshError) {
