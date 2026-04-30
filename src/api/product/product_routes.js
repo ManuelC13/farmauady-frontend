@@ -14,7 +14,7 @@ export const getProductRequest = (id) =>
     api.get(`/products/${id}`);
 
 export const createProductRequest = (product) =>
-    api.post("/products", product);
+    api.post("/products/", product);
 
 export const updateProductRequest = (id, product) =>
     api.put(`/products/${id}`, product);
