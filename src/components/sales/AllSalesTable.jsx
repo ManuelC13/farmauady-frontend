@@ -1,92 +1,161 @@
-import { Printer, Banknote, CreditCard, Loader2, Info } from "lucide-react";
+import { Printer, Banknote, CreditCard, Loader2, Info, Search, ListFilter, ChevronDown, FileDown } from "lucide-react";
 import { useState, useEffect } from "react";
-import { getAllSalesAdminRequest } from "../../api/sales/sales_routes";
+import { getAllSalesAdminRequest, getFilteredSalesRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
+import { getSellersRequest } from "../../api/user/user_routes"
 import Pagination from "../layout/Pagination";
+import { SalesReportPDF } from "../pdf/SalesReportPDF";
 
 const LIMIT = 10;
 
 function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
-  const [sales, setSales] = useState([]);
-  const [loading, setLoading] = useState(true);
-    const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const [sales, setSales]             = useState([]);
+  const [loading, setLoading]         = useState(true);
+  const [page, setPage]               = useState(1);
+  const [totalPages, setTotalPages]   = useState(1);
+  const [startDate, setStartDate]     = useState("");
+  const [endDate, setEndDate]         = useState("");
+  const [sellerId, setSellerId]       = useState("");
+  const [appliedFilters, setAppliedFilters] = useState({});
   const toast = useToast();
+  const [sellers, setSellers] = useState([]);
+
+  useEffect(() => {
+    const loadSellers = async () => {
+      try {
+        const { data } = await getSellersRequest();
+        setSellers(data);
+      } catch {
+      }
+    };
+    loadSellers();
+  }, []);
 
   useEffect(() => {
     const fetchSales = async () => {
       try {
         setLoading(true);
-        const { data } = await getAllSalesAdminRequest(page, LIMIT);
+        const { data } = await getAllSalesAdminRequest(page, LIMIT, appliedFilters);
         const mapped = data.data.map((sale) => ({
-          id: sale.folio,
-          rawDate:  new Date(sale.sale_date),
+          id:      sale.folio,
+          rawDate: new Date(sale.sale_date),
           datetime: new Date(sale.sale_date).toLocaleString("es-MX", {
             day: "2-digit", month: "2-digit", year: "numeric",
             hour: "2-digit", minute: "2-digit",
           }),
-          items:    sale.details.reduce((sum, item) => sum + item.quantity, 0),
-          total:    parseFloat(sale.total).toFixed(2),
-          method:   sale.payment_method
+          items:   sale.details.reduce((sum, item) => sum + item.quantity, 0),
+          total:   parseFloat(sale.total).toFixed(2),
+          method:  sale.payment_method
             ? sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)
             : "Efectivo",
-          seller: sale.seller_name,
+          seller:  sale.seller_name,
+          rawSale: sale,
         }));
         setSales(mapped);
         setTotalPages(Math.ceil(data.total / LIMIT));
-      } catch (error) {
+      } catch {
         toast.error("Error al cargar el historial de ventas");
       } finally {
         setLoading(false);
       }
     };
-
     fetchSales();
-  }, [page]);
+  }, [page, appliedFilters]);
+
+  const handleFilter = () => {
+    const newFilters = {};
+    if (startDate)  newFilters.start_date = startDate;
+    if (endDate)    newFilters.end_date   = endDate;
+    if (sellerId)   newFilters.seller_id  = sellerId;
+    setAppliedFilters(newFilters);
+    setPage(1);
+  };
+
+  const handleClearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setSellerId("");
+    setAppliedFilters({});
+    setPage(1);
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      const params = {
+        start_date:  appliedFilters.start_date  || "2000-01-01",
+        end_date:    appliedFilters.end_date    || new Date().toISOString().split('T')[0],
+        seller_id:   appliedFilters.seller_id   || undefined,
+      };
+      const { data } = await getFilteredSalesRequest(params);
+      const blob = await SalesReportPDF(data, appliedFilters);
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `ventas_${new Date().toISOString().split('T')[0]}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error("Error al generar el reporte PDF");
+    }
+  };
 
   const displaySales = sales.filter((sale) => {
     const query = searchTerm.toLowerCase().trim();
-
-    // Filtrar por ID de venta o vendedor
     if (query && !sale.id.toLowerCase().includes(query) && !sale.seller.toLowerCase().includes(query)) {
       return false;
     }
-
-    // Filtrar por fecha
-    if (timeFilter && sale.rawDate) {
-      const now = new Date();
-      const msPerDay = 24 * 60 * 60 * 1000;
-
-      switch (timeFilter) {
-        case "Hoy":
-          if (sale.rawDate.toDateString() !== now.toDateString()) return false;
-          break;
-        case "Esta semana":
-          if (now - sale.rawDate > 7 * msPerDay) return false;
-          break;
-        case "Este mes":
-          if (sale.rawDate.getMonth() !== now.getMonth() ||
-              sale.rawDate.getFullYear() !== now.getFullYear()) return false;
-          break;
-        case "Este año":
-          if (sale.rawDate.getFullYear() !== now.getFullYear()) return false;
-          break;
-        default:
-          break;
-      }
-    }
-
     return true;
   });
 
+  const inputBase = "border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white";
+
+
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full flex flex-col">
-      <div className="flex-1 overflow-y-auto">
+    <div className="bg-white rounded-xl border border-gray-200 shadow-sm flex flex-col">
+
+      {/* Filtros */}
+      <div className="flex flex-wrap items-end gap-4 px-6 py-4 border-b border-gray-100">
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-600">Fecha inicio</label>
+          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputBase} />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-600">Fecha fin</label>
+          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputBase} />
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-gray-600">Vendedor</label>
+          <select value={sellerId} onChange={(e) => setSellerId(e.target.value)} className={`${inputBase} min-w-[160px]`}>
+            <option value="">Todos</option>
+            {sellers.map((s) => (
+              <option key={s.id_user} value={s.id_user}>{s.first_name} {s.last_name}</option>
+            ))}
+          </select>
+        </div>
+
+        <button onClick={handleFilter} className="px-4 py-2 bg-primary text-white text-sm font-semibold rounded-lg hover:bg-secondary transition cursor-pointer">
+          <ListFilter size={16} className="inline mr-1" /> Filtrar
+        </button>
+
+        <button onClick={handleClearFilters} className="px-4 py-2 border border-gray-300 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-50 transition cursor-pointer">
+          Limpiar
+        </button>
+
+        <button onClick={handleExportPDF} className="ml-auto px-4 py-2 border border-gray-300 bg-white text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition cursor-pointer flex items-center gap-2">
+          <FileDown size={16} /> Exportar PDF
+        </button>
+      </div>
+
+      {/* Tabla */}
+      <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-[#EDF5FF] sticky top-0 z-10 shadow-sm border-b border-blue-100">
+            <tr className="bg-[#EDF5FF] border-b border-blue-100">
               {["ID de venta", "Vendedor", "Fecha y hora", "Artículos", "Total", "Método de pago", "Acciones"].map((col) => (
-                <th key={col} className="py-4 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider bg-[#EDF5FF]">
+                <th key={col} className="py-4 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider">
                   {col}
                 </th>
               ))}
@@ -141,6 +210,7 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
           </tbody>
         </table>
       </div>
+
       <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
