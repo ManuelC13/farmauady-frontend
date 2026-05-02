@@ -4,8 +4,8 @@ import { api } from "../axios";
 export const getSaleProductsRequest = (search = "") =>
     api.get("/products/sale", { params: { search } });
 
-export const getProductsRequest = () =>
-    api.get("/products/");
+export const getProductsRequest = (page = 1, limit = 10) =>
+    api.get("/products/", { params: { page, limit } });
 
 export const getCategoriesRequest = () =>
     api.get("/categories/");

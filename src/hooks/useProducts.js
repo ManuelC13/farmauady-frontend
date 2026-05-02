@@ -7,18 +7,21 @@ import {
   deleteProductRequest 
 } from "../api/product/product_routes";
 
+const LIMIT = 10;
+
 export function useProducts() {
   const [products, setProducts] = useState([]);
+  const [page, setPage]         = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const toast = useToast();
 
-  const loadProducts = async () => {
-    const res = await getProductsRequest();
-    setProducts(res.data);
+  const loadProducts = async (p = page) => {
+    const res = await getProductsRequest(p, LIMIT);
+    setProducts(res.data.data);
+    setTotalPages(Math.ceil(res.data.total / LIMIT));
   };
 
-  useEffect(() => {
-    loadProducts();
-  }, []);
+  useEffect(() => { loadProducts(); }, [page]);
 
   const createProduct = async (data) => {
     try {
@@ -53,5 +56,5 @@ export function useProducts() {
     }
   }
 
-  return { products, createProduct, updateProduct, deleteProduct };
+  return { products, page, totalPages, setPage, createProduct, updateProduct, deleteProduct };
 }

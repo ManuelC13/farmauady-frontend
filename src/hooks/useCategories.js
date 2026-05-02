@@ -7,18 +7,21 @@ import {
     deleteCategoryRequest,
 } from "../api/product/category_routes";
 
+const LIMIT = 10;
+
 export function useCategories() {
     const [categories, setCategories] = useState([]);
+    const [page, setPage]         = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const toast = useToast();
 
-    const loadCategories = async () => {
-        const res = await getCategoriesRequest();
-        setCategories(res.data);
+    const loadCategories = async (p = page) => {
+        const res = await getCategoriesRequest(p, LIMIT);
+        setCategories(res.data.data);
+        setTotalPages(Math.ceil(res.data.total / LIMIT));
     };
 
-    useEffect(() => {
-        loadCategories();
-    }, []);
+    useEffect(() => { loadCategories(); }, [page]);
 
     const createCategory = async (data) => {
         try {
@@ -53,5 +56,5 @@ export function useCategories() {
         }
     };
 
-    return { categories, createCategory, updateCategory, deleteCategory };
+    return { categories, page, totalPages, setPage, createCategory, updateCategory, deleteCategory };
 }

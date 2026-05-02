@@ -6,10 +6,11 @@ import ProductTable2 from "../../components/product/ProductTable2";
 import ProductModal from "../../components/product/ProductModal";
 import ConfirmModal from "../../components/common/modals/ConfirmModal";
 import ManualExitModal from "../../components/inventory/ManualExitModal";
+import Pagination from "../../components/layout/Pagination";
 import { Plus, Search, ArrowDownRight } from "lucide-react";
 
 function AdminProducts() {
-  const { products, createProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, page, totalPages, setPage, createProduct, updateProduct, deleteProduct } = useProducts();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -124,6 +125,8 @@ function AdminProducts() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
+
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </div>
       </div>

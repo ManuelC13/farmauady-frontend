@@ -6,10 +6,11 @@ import Navbar from "../../components/layout/Navbar";
 import UserTable from "../../components/user/UserTable";
 import UserModal from "../../components/user/UserModal";
 import ConfirmModal from "../../components/common/modals/ConfirmModal";
+import Pagination from "../../components/layout/Pagination";
 import { Plus, Search } from "lucide-react";
 
 function Users() {
-  const { users, createUser, deleteUser, updateUser } = useUsers();
+  const { users, page, totalPages, setPage, createUser, deleteUser, updateUser } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -94,13 +95,6 @@ function Users() {
               editingUser={editingUser}
             />
 
-            {/*<ConfirmModal
-              isOpen={isDeleteModalOpen}
-              onClose={handleCloseDeleteModal}
-              onConfirm={deleteUser}
-              user={deletingUser}
-            />*/}
-
             <ConfirmModal
               isOpen={isDeleteModalOpen}
               onClose={handleCloseDeleteModal}
@@ -116,6 +110,8 @@ function Users() {
               onDelete={handleDeleteClick}
               currentUser={currentUser}
             />
+
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </div>
 

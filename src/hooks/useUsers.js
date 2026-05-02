@@ -7,18 +7,21 @@ import {
   updateUserRequest 
 } from "../api/user/user_routes";
 
+const LIMIT = 10;
+
 export function useUsers() {
   const [users, setUsers] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const toast = useToast();
 
-  const loadUsers = async () => {
-    const res = await getUsersRequest();
-    setUsers(res.data);
+  const loadUsers = async (p = page) => {
+    const res = await getUsersRequest(p, LIMIT);
+    setUsers(res.data.data);
+    setTotalPages(Math.ceil(res.data.total / LIMIT));
   };
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
+  useEffect(() => { loadUsers(); }, [page]);
 
   const createUser = async (data) => {
     try {
@@ -53,5 +56,5 @@ export function useUsers() {
     }
   };
 
-  return { users, createUser, deleteUser, updateUser };
+  return { users, page, totalPages, setPage, createUser, deleteUser, updateUser };
 }

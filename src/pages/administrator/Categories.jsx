@@ -5,10 +5,11 @@ import Navbar from "../../components/layout/Navbar";
 import CategoryTable from "../../components/product/CategoryTable";
 import CategoryModal from "../../components/product/CategoryModal";
 import ConfirmModal from "../../components/common/modals/ConfirmModal";
+import Pagination from "../../components/layout/Pagination";
 import { Plus, Search } from "lucide-react";
 
 function Categories() {
-  const { categories, createCategory, updateCategory, deleteCategory } = useCategories();
+  const { categories, page, totalPages, setPage, createCategory, updateCategory, deleteCategory } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -103,6 +104,8 @@ function Categories() {
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
+
+            <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </div>
       </div>

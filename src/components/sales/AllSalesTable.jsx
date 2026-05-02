@@ -2,19 +2,24 @@ import { Printer, Banknote, CreditCard, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAllSalesAdminRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
+import Pagination from "../layout/Pagination";
+
+const LIMIT = 10;
 
 function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState([]);
   const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const toast = useToast();
 
   useEffect(() => {
     const fetchSales = async () => {
       try {
         setLoading(true);
-        const { data } = await getAllSalesAdminRequest();
-        const mapped = data.map((sale) => ({
-          id:       sale.folio,
+        const { data } = await getAllSalesAdminRequest(page, LIMIT);
+        const mapped = data.data.map((sale) => ({
+          id: sale.folio,
           rawDate:  new Date(sale.sale_date),
           datetime: new Date(sale.sale_date).toLocaleString("es-MX", {
             day: "2-digit", month: "2-digit", year: "numeric",
@@ -28,6 +33,7 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
           seller: sale.seller_name,
         }));
         setSales(mapped);
+        setTotalPages(Math.ceil(data.total / LIMIT));
       } catch (error) {
         toast.error("Error al cargar el historial de ventas");
       } finally {
@@ -36,7 +42,7 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
     };
 
     fetchSales();
-  }, []);
+  }, [page]);
 
   const displaySales = sales.filter((sale) => {
     const query = searchTerm.toLowerCase().trim();
@@ -135,6 +141,7 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
           </tbody>
         </table>
       </div>
+      <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
   );
 }

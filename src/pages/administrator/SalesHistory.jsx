@@ -77,7 +77,7 @@ function SalesHistory() {
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Buscar por ID o vendedor"
+                  placeholder="Buscar por ID o por vendedor"
                   className="pl-11 pr-4 py-2 bg-white border border-blue-400 rounded-lg text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-200 transition shadow-sm h-full"
                 />
               </div>

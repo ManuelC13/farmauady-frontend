@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
-import { useCategories } from "../../hooks/useCategories";
+import { useCategoriesAll } from "../../hooks/useCategoriesAll";
 
 function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
 
@@ -17,7 +17,7 @@ function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct }) {
 
   const isEditMode = !!editingProduct;
   const [form, setForm] = useState(initialForm);
-  const { categories } = useCategories();
+  const { categories } = useCategoriesAll();
 
   useEffect(() => {
     if (editingProduct) {
