@@ -1,12 +1,15 @@
-import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info } from "lucide-react";
+import { Printer, Banknote, CreditCard, ChevronDown, Loader2, Info, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getMySalesRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
 import { generateTicketPDF } from "../pdf/TicketPDF";
+import { parseUtcDate } from "../../utils/dateUtils";
+import SaleDetailModal from "./SaleDetailModal";
 
 function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState(propSales || []);
   const [loading, setLoading] = useState(!propSales);
+  const [selectedSale, setSelectedSale] = useState(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -22,15 +25,14 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
         const { data } = await getMySalesRequest();
         const mappedSales = data.map(sale => ({
           id: sale.folio,
-          datetime: new Date(sale.sale_date).toLocaleString("es-MX", {
+          datetime: parseUtcDate(sale.sale_date).toLocaleString("es-MX", {
             day: '2-digit', month: '2-digit', year: 'numeric',
             hour: '2-digit', minute: '2-digit'
           }),
-          rawDate: new Date(sale.sale_date),
+          rawDate: parseUtcDate(sale.sale_date),
           items: sale.details.reduce((sum, item) => sum + item.quantity, 0),
           total: parseFloat(sale.total).toFixed(2),
           method: sale.payment_method ? (sale.payment_method.charAt(0).toUpperCase() + sale.payment_method.slice(1)) : "Efectivo",
-          // Guardamos el objeto completo para poder generar el PDF
           rawSale: sale,
         }));
         setSales(mappedSales);
@@ -46,12 +48,10 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
   }, [propSales]);
 
   const displaySales = sales.filter(sale => {
-    // Filtrar por ID de Venta (En este caso el folio)
     if (searchTerm && !sale.id.toLowerCase().includes(searchTerm.toLowerCase())) {
       return false;
     }
 
-    // Filtrar por fecha
     if (timeFilter && sale.rawDate) {
       const now = new Date();
       const saleDate = sale.rawDate;
@@ -62,7 +62,6 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
           if (saleDate.toDateString() !== now.toDateString()) return false;
           break;
         case "Esta semana":
-          // Aproximación: últimos 7 días
           if (now.getTime() - saleDate.getTime() > 7 * msPerDay) return false;
           break;
         case "Este mes":
@@ -79,7 +78,6 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
     return true;
   });
 
-  // Genera y descarga el PDF del ticket
   const handleDownloadTicket = async (sale) => {
     if (!sale.rawSale) {
       toast.error("No se encontraron los detalles de esta venta.");
@@ -102,8 +100,9 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
   };
 
   return (
+    <>
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full flex flex-col">
-      {/* Tabla con scroll */}
+      {/*Tabla con scroll */}
       <div className="flex-1 overflow-y-auto">
         <table className="w-full text-left border-collapse">
           <thead>
@@ -145,13 +144,22 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
                     </div>
                   </td>
                   <td className="py-5 px-6 text-center">
-                    <button
-                      onClick={() => handleDownloadTicket(sale)}
-                      title="Descargar ticket PDF"
-                      className="p-2 hover:bg-blue-50 rounded-full transition-colors inline-flex items-center justify-center"
-                    >
-                      <Printer size={20} className="text-[#007BFF]" />
-                    </button>
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        onClick={() => setSelectedSale(sale.rawSale)}
+                        title="Ver detalle"
+                        className="p-2 hover:bg-blue-50 rounded-full transition-colors inline-flex items-center justify-center"
+                      >
+                        <Eye size={18} className="text-gray-500 hover:text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => handleDownloadTicket(sale)}
+                        title="Descargar ticket PDF"
+                        className="p-2 hover:bg-blue-50 rounded-full transition-colors inline-flex items-center justify-center"
+                      >
+                        <Printer size={18} className="text-[#007BFF]" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -169,6 +177,14 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
         </table>
       </div>
     </div>
+
+    {selectedSale && (
+      <SaleDetailModal
+        sale={selectedSale}
+        onClose={() => setSelectedSale(null)}
+      />
+    )}
+    </>
   );
 }
 

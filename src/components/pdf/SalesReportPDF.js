@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { parseUtcDate } from '../../utils/dateUtils';
 
 const C = {
   blue:      [0, 123, 255],
@@ -103,7 +104,7 @@ export async function SalesReportPDF(sales, filters = {}) {
       y = 20;
     }
 
-    const saleDate = new Date(sale.sale_date);
+    const saleDate  = parseUtcDate(sale.sale_date);
     const fechaVenta = saleDate.toLocaleDateString('es-MX', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const horaVenta  = saleDate.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
 

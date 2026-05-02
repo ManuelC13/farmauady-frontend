@@ -5,6 +5,7 @@ import { SalesReportPDF } from "../pdf/SalesReportPDF";
 import { useToast } from "../../context/ToastContext";
 import { useUsers } from "../../hooks/useUsers";
 import { useCategories } from "../../hooks/useCategories";
+import { parseUtcDate } from "../../utils/dateUtils";
 
 function SalesReportTable({
   startDate, endDate, sellerId, categoryId, appliedFilters,
@@ -172,7 +173,7 @@ function SalesReportTable({
                 <tr key={sale.id_sale} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-6 text-sm font-bold text-gray-800">{sale.folio}</td>
                   <td className="py-4 px-6 text-sm text-gray-600">
-                    {new Date(sale.sale_date).toLocaleString("es-MX", {
+                    {parseUtcDate(sale.sale_date).toLocaleString("es-MX", {
                       day: "2-digit", month: "2-digit", year: "numeric",
                       hour: "2-digit", minute: "2-digit",
                     })}

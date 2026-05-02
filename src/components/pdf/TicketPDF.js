@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { parseUtcDate } from '../../utils/dateUtils';
 
 const C = {
   blue:      [0, 123, 255],
@@ -28,7 +29,7 @@ export async function generateTicketPDF(sale) {
   doc.rect(0, 0, PW, PH, 'F');
 
   //Datos de la venta
-  const dateObj   = new Date(sale.sale_date);
+  const dateObj   = parseUtcDate(sale.sale_date);
   const fecha     = dateObj.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
   const hora      = dateObj.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
   const metodoPago = sale.payment_method

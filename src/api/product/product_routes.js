@@ -1,8 +1,8 @@
 import { api } from "../axios";
 
 //Para Nueva Venta (catálogo con búsqueda)
-export const getSaleProductsRequest = (search = "") =>
-    api.get("/products/sale", { params: { search } });
+export const getSaleProductsRequest = (search = "", cart_session_id = null) =>
+    api.get("/products/sale", { params: { search, cart_session_id } });
 
 export const getProductsRequest = () =>
     api.get("/products/");

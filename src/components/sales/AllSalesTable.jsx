@@ -2,6 +2,7 @@ import { Printer, Banknote, CreditCard, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAllSalesAdminRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
+import { parseUtcDate } from "../../utils/dateUtils";
 
 function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
   const [sales, setSales] = useState([]);
@@ -15,8 +16,8 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
         const { data } = await getAllSalesAdminRequest();
         const mapped = data.map((sale) => ({
           id:       sale.folio,
-          rawDate:  new Date(sale.sale_date),
-          datetime: new Date(sale.sale_date).toLocaleString("es-MX", {
+          rawDate:  parseUtcDate(sale.sale_date),
+          datetime: parseUtcDate(sale.sale_date).toLocaleString("es-MX", {
             day: "2-digit", month: "2-digit", year: "numeric",
             hour: "2-digit", minute: "2-digit",
           }),

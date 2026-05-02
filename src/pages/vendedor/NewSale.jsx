@@ -24,11 +24,13 @@ function NewSale() {
   const countdownRef = useRef(null);
   const [reserving, setReserving] = useState(false);
   const reserveTimerRef = useRef(null);
+  const wsRef = useRef(null);
+  const searchRef = useRef(search);
 
-  const fetchProducts = async (searchTerm = "") => {
-    setLoading(true);
+  const fetchProducts = async (searchTerm = "", isBackground = false) => {
+    if (!isBackground) setLoading(true);
     try {
-      const response = await getSaleProductsRequest(searchTerm);
+      const response = await getSaleProductsRequest(searchTerm, cartSessionId);
       const mappedProducts = response.data.products.map((p) => ({
         id: p.id_product,
         name: p.name,
@@ -40,13 +42,82 @@ function NewSale() {
     } catch (error) {
       console.error("Error al obtener productos:", error);
     } finally {
-      setLoading(false);
+      if (!isBackground) setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    searchRef.current = search;
+  }, [search]);
+
+  useEffect(() => {
+    fetchProducts(search);
+  }, [search]);
+
+  //WebSocket: conexión persistente para recibir actualizaciones de inventario en tiempo real
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
+    const wsUrl = apiUrl.replace(/^http/, "ws") + "/ws/inventory";
+    let destroyed = false;
+    let reconnectTimeout = null;
+    let ws = null;
+
+    const connect = () => {
+      if (destroyed) return;
+
+      ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
+
+      ws.onmessage = (event) => {
+        if (event.data === "INVENTORY_UPDATE") {
+          fetchProducts(searchRef.current, true);
+        }
+      };
+
+      ws.onclose = () => {
+        if (!destroyed) {
+          reconnectTimeout = setTimeout(connect, 3000);
+        }
+      };
+
+      ws.onerror = () => {
+      };
+    };
+    const initialTimeout = setTimeout(connect, 200);
+
+    return () => {
+      destroyed = true;
+      clearTimeout(initialTimeout);
+      clearTimeout(reconnectTimeout);
+      if (ws) {
+        ws.onclose = null;
+        ws.onerror = null;
+        ws.onmessage = null;
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+          ws.close();
+        }
+      }
+      wsRef.current = null;
+    };
   }, []);
+
+  useEffect(() => {
+    if (products.length > 0) {
+      setCart((prevCart) => {
+        let changed = false;
+        const newCart = prevCart.map(item => {
+          const p = products.find(prod => prod.id === item.id);
+          if (p && item.quantity > p.stock) {
+            changed = true;
+            return { ...item, quantity: p.stock };
+          }
+          return item;
+        }).filter(item => item.quantity > 0);
+        
+        return changed ? newCart : prevCart;
+      });
+    }
+  }, [products]);
 
   //Cuenta regresiva: arranca cuando hay una reserva activa
   useEffect(() => {
@@ -106,6 +177,7 @@ function NewSale() {
           error?.response?.data?.detail ||
           "No se pudo reservar el stock. Intenta de nuevo.";
         toast.error(detail);
+        fetchProducts(search);
       } finally {
         setReserving(false);
       }

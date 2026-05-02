@@ -1,13 +1,16 @@
-import { Eye, Loader2, Info } from "lucide-react";
+import { Eye, Printer, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getRecentSalesRequest } from "../../api/sales/sales_routes";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "../../context/ToastContext";
+import { parseUtcDate } from "../../utils/dateUtils";
+import { generateTicketPDF } from "../pdf/TicketPDF";
+import SaleDetailModal from "./SaleDetailModal";
+
 
 function RecentSalesTable({ sales: propSales }) {
-  const navigate = useNavigate();
   const [sales, setSales] = useState(propSales || []);
   const [loading, setLoading] = useState(!propSales);
+  const [selectedSale, setSelectedSale] = useState(null);
   const toast = useToast();
 
   useEffect(() => {
@@ -23,9 +26,10 @@ function RecentSalesTable({ sales: propSales }) {
         const { data } = await getRecentSalesRequest(5);
         const mappedSales = data.map(sale => ({
           id: sale.folio,
-          time: new Date(sale.sale_date).toLocaleTimeString("es-MX", { hour: 'numeric', minute: '2-digit', hour12: true }),
+          time: parseUtcDate(sale.sale_date).toLocaleTimeString("es-MX", { hour: 'numeric', minute: '2-digit', hour12: true }),
           items: sale.details.reduce((sum, item) => sum + item.quantity, 0),
-          total: parseFloat(sale.total)
+          total: parseFloat(sale.total),
+          rawSale: sale,
         }));
         setSales(mappedSales);
       } catch (error) {
@@ -41,7 +45,24 @@ function RecentSalesTable({ sales: propSales }) {
 
   const displaySales = sales;
 
+  const handlePrint = async (rawSale) => {
+    try {
+      const blob = await generateTicketPDF(rawSale);
+      if (!blob) throw new Error();
+      const url  = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href  = url;
+      link.download = `Ticket_${rawSale.folio}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Ticket #${rawSale.folio} descargado`);
+    } catch {
+      toast.error("No se pudo generar el ticket. Intenta de nuevo.");
+    }
+  };
+
   return (
+    <>
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm h-full flex flex-col">
       {/* Header de la tabla*/}
       <div className="flex-none flex justify-between items-center p-4 border-b border-gray-50">
@@ -62,7 +83,7 @@ function RecentSalesTable({ sales: propSales }) {
               <th className="py-3 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider text-left bg-[#EDF5FF]">Hora</th>
               <th className="py-3 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider text-center bg-[#EDF5FF]">Artículos</th>
               <th className="py-3 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider text-left bg-[#EDF5FF]">Total</th>
-              <th className="py-3 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider text-center bg-[#EDF5FF]">Acción</th>
+              <th className="py-3 px-6 text-[#A0C4FF] font-semibold text-xs uppercase tracking-wider text-center bg-[#EDF5FF]">Acciones</th>
             </tr>
           </thead>
 
@@ -84,9 +105,22 @@ function RecentSalesTable({ sales: propSales }) {
                   <td className="py-4 px-6 text-sm text-gray-600 text-center">{sale.items}</td>
                   <td className="py-4 px-6 text-sm font-bold text-gray-800">${sale.total.toFixed(2)}</td>
                   <td className="py-4 px-6 text-center">
-                    <button className="p-1 hover:bg-gray-200 rounded-full transition-colors inline-flex items-center justify-center">
-                      <Eye size={20} className="text-gray-800" />
-                    </button>
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        onClick={() => setSelectedSale(sale.rawSale)}
+                        title="Ver detalle"
+                        className="p-1.5 hover:bg-blue-50 rounded-full transition-colors inline-flex items-center justify-center"
+                      >
+                        <Eye size={18} className="text-gray-500 hover:text-blue-600" />
+                      </button>
+                      <button
+                        onClick={() => handlePrint(sale.rawSale)}
+                        title="Descargar ticket"
+                        className="p-1.5 hover:bg-blue-50 rounded-full transition-colors inline-flex items-center justify-center"
+                      >
+                        <Printer size={18} className="text-[#007BFF]" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -104,6 +138,14 @@ function RecentSalesTable({ sales: propSales }) {
         </table>
       </div>
     </div>
+
+    {selectedSale && (
+      <SaleDetailModal
+        sale={selectedSale}
+        onClose={() => setSelectedSale(null)}
+      />
+    )}
+    </>
   );
 }
 
