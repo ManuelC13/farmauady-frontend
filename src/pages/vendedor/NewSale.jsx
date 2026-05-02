@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import Sidebar from "../../components/layout/Sidebar";
 import Navbar from "../../components/layout/Navbar";
 import ProductCard from "../../components/product/ProductCard";
@@ -9,28 +10,49 @@ import { useToast } from "../../context/ToastContext";
 import { generateTicketPDF } from "../../components/pdf/TicketPDF";
 
 function NewSale() {
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
-  const [cart, setCart] = useState([]);
-  const [search, setSearch] = useState("");
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem("farmauady_cart");
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return [];
+  });
+  const [search, setSearch] = useState(searchParams.get("search") || "");
   const [loading, setLoading] = useState(true);
   const [confirming, setConfirming] = useState(false);
   const [lastSale, setLastSale] = useState(null);
   const toast = useToast();
 
-  const [cartSessionId] = useState(() => crypto.randomUUID());
+  const [cartSessionId] = useState(() => {
+    const saved = localStorage.getItem("farmauady_cart_session");
+    if (saved) return saved;
+    const newId = crypto.randomUUID();
+    localStorage.setItem("farmauady_cart_session", newId);
+    return newId;
+  });
 
-  const [reservationExpiry, setReservationExpiry] = useState(null);
+  const [reservationExpiry, setReservationExpiry] = useState(() => {
+    const saved = localStorage.getItem("farmauady_cart_expiry");
+    if (saved) {
+      const expiryDate = new Date(saved);
+      if (expiryDate > new Date()) return expiryDate;
+    }
+    return null;
+  });
   const [countdown, setCountdown] = useState(null);
   const countdownRef = useRef(null);
   const [reserving, setReserving] = useState(false);
   const reserveTimerRef = useRef(null);
+  const lastReservedCartStr = useRef(JSON.stringify(cart));
   const wsRef = useRef(null);
   const searchRef = useRef(search);
 
   const fetchProducts = async (searchTerm = "", isBackground = false) => {
     if (!isBackground) setLoading(true);
     try {
-      const response = await getSaleProductsRequest(searchTerm, cartSessionId);
+      const response = await getSaleProductsRequest(searchTerm, cartSessionId, true);
       const mappedProducts = response.data.products.map((p) => ({
         id: p.id_product,
         name: p.name,
@@ -53,6 +75,20 @@ function NewSale() {
   useEffect(() => {
     fetchProducts(search);
   }, [search]);
+
+  //Sincronizar carrito con localStorage
+  useEffect(() => {
+    localStorage.setItem("farmauady_cart", JSON.stringify(cart));
+  }, [cart]);
+
+  //Sincronizar expiración con localStorage
+  useEffect(() => {
+    if (reservationExpiry) {
+      localStorage.setItem("farmauady_cart_expiry", reservationExpiry.toISOString());
+    } else {
+      localStorage.removeItem("farmauady_cart_expiry");
+    }
+  }, [reservationExpiry]);
 
   //WebSocket: conexión persistente para recibir actualizaciones de inventario en tiempo real
   useEffect(() => {
@@ -136,7 +172,8 @@ function NewSale() {
         clearInterval(countdownRef.current);
         setReservationExpiry(null);
         setCountdown(null);
-        toast.error("La reserva expiró. Vuelve a agregar productos al carrito.");
+        setCart([]); // Limpiar carrito al expirar
+        toast.error("La reserva expiró. El carrito ha sido vaciado.");
       }
     };
 
@@ -149,10 +186,16 @@ function NewSale() {
   useEffect(() => {
     if (reserveTimerRef.current) clearTimeout(reserveTimerRef.current);
 
+    const currentCartStr = JSON.stringify(cart);
+
+    if (currentCartStr === lastReservedCartStr.current && reservationExpiry) {
+      return;
+    }
+
     if (cart.length === 0) {
-      // Carrito vacío: liberar reservas del backend silenciosamente
       releaseReservationRequest(cartSessionId).catch(() => {});
       setReservationExpiry(null);
+      lastReservedCartStr.current = currentCartStr;
       return;
     }
 
@@ -171,6 +214,8 @@ function NewSale() {
         const raw = res.data.expires_at;
         const utcString = raw.endsWith("Z") ? raw : raw + "Z";
         setReservationExpiry(new Date(utcString));
+        
+        lastReservedCartStr.current = currentCartStr;
 
       } catch (error) {
         const detail =
@@ -257,6 +302,8 @@ function NewSale() {
       setLastSale(sale);
       setCart([]);
       setReservationExpiry(null);
+      localStorage.removeItem("farmauady_cart");
+      localStorage.removeItem("farmauady_cart_expiry");
       toast.success(
         `Venta #${sale.folio} registrada por $${parseFloat(sale.total).toFixed(2)}`
       );

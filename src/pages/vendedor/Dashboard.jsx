@@ -6,11 +6,13 @@ import { Plus, Search, DollarSign, Pill } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getDailyStatsRequest } from "../../api/sales/sales_routes";
+import ProductSearchModal from "../../components/vendedor/ProductSearchModal";
 
 function DashboardVendedor() {
     const { user } = useAuth();
     const navigate = useNavigate();
     const [stats, setStats] = useState({ total_sales: 0, items_sold: 0 });
+    const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -37,6 +39,7 @@ function DashboardVendedor() {
         actualiDateFormatted.slice(1).replace(",", "");
 
     return (
+        <>
         <div className="h-screen flex overflow-hidden bg-gray-50">
             <div className="flex-none">
                 <Sidebar />
@@ -70,7 +73,10 @@ function DashboardVendedor() {
                                     Nueva venta
                                 </button>
 
-                                <button className="bg-[#007BFF] hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors shadow-sm">
+                                <button
+                                    onClick={() => setIsSearchModalOpen(true)}
+                                    className="bg-[#007BFF] hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold flex items-center gap-2 transition-colors shadow-sm"
+                                >
                                     <Search size={20} />
                                     Consultar artículo
                                 </button>
@@ -120,6 +126,12 @@ function DashboardVendedor() {
             </div>
 
         </div>
+
+        <ProductSearchModal
+            isOpen={isSearchModalOpen}
+            onClose={() => setIsSearchModalOpen(false)}
+        />
+        </>
     );
 }
 

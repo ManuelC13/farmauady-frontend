@@ -1,5 +1,6 @@
 import { Eye, Printer, Loader2, Info } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getRecentSalesRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
 import { parseUtcDate } from "../../utils/dateUtils";
@@ -8,6 +9,7 @@ import SaleDetailModal from "./SaleDetailModal";
 
 
 function RecentSalesTable({ sales: propSales }) {
+  const navigate = useNavigate();
   const [sales, setSales] = useState(propSales || []);
   const [loading, setLoading] = useState(!propSales);
   const [selectedSale, setSelectedSale] = useState(null);
@@ -68,7 +70,7 @@ function RecentSalesTable({ sales: propSales }) {
       <div className="flex-none flex justify-between items-center p-4 border-b border-gray-50">
         <h2 className="text-xl font-bold text-gray-800">Ventas recientes</h2>
         <button 
-        onClick={() => navigate("/vendedor/register-sale")}
+        onClick={() => navigate("/vendedor/register-sale/")}
         className="px-4 py-1.5 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer">
           Ver todo
         </button>
