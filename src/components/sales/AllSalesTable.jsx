@@ -5,9 +5,9 @@ import { useToast } from "../../context/ToastContext";
 import { getSellersRequest } from "../../api/user/user_routes"
 import Pagination from "../layout/Pagination";
 import { SalesReportPDF } from "../pdf/SalesReportPDF";
+import { parseUtcDate } from "../../utils/dateUtils";
 
 const LIMIT = 10;
-import { parseUtcDate } from "../../utils/dateUtils";
 
 function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
   const [sales, setSales]             = useState([]);
