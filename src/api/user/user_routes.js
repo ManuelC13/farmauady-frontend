@@ -1,7 +1,10 @@
 import { api } from "../axios";
 
-export const getUsersRequest = () =>
-    api.get("/users/");
+export const getSellersRequest = () =>
+    api.get("/users/sellers");
+
+export const getUsersRequest = (page = 1, limit = 10) =>
+    api.get("/users/", { params: { page, limit } });
 
 export const updateOwnProfileRequest = (user) =>
     api.put("/users/me", user);

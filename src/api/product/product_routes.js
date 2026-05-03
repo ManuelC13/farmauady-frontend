@@ -4,8 +4,8 @@ import { api } from "../axios";
 export const getSaleProductsRequest = (search = "", cart_session_id = null, only_available = false) =>
     api.get("/products/sale", { params: { search, cart_session_id, only_available } });
 
-export const getProductsRequest = () =>
-    api.get("/products/");
+export const getProductsRequest = (page = 1, limit = 10, filters = {}) =>
+    api.get("/products/", { params: { page, limit, ...filters } });
 
 export const getCategoriesRequest = () =>
     api.get("/categories/");
@@ -22,5 +22,5 @@ export const updateProductRequest = (id, product) =>
 export const deleteProductRequest = (id) =>
     api.delete(`/products/${id}`);
 
-export const getInventoryReportRequest = () =>
-    api.get("/products/inventory-report");
+export const getInventoryReportRequest = (filters = {}) =>
+    api.get("/products/inventory-report", { params: { ...filters } });
