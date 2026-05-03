@@ -23,7 +23,8 @@ function SalesRecordTable({ sales: propSales, searchTerm = "", timeFilter = "" }
       try {
         setLoading(true);
         const { data } = await getMySalesRequest();
-        const mappedSales = data.map(sale => ({
+        const sList = Array.isArray(data) ? data : (data?.data || []);
+        const mappedSales = sList.map(sale => ({
           id: sale.folio,
           datetime: parseUtcDate(sale.sale_date).toLocaleString("es-MX", {
             day: '2-digit', month: '2-digit', year: 'numeric',

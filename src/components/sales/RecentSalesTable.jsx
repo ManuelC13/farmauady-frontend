@@ -26,7 +26,8 @@ function RecentSalesTable({ sales: propSales }) {
       try {
         setLoading(true);
         const { data } = await getRecentSalesRequest(5);
-        const mappedSales = data.map(sale => ({
+        const sList = Array.isArray(data) ? data : (data?.data || []);
+        const mappedSales = sList.map(sale => ({
           id: sale.folio,
           time: parseUtcDate(sale.sale_date).toLocaleTimeString("es-MX", { hour: 'numeric', minute: '2-digit', hour12: true }),
           items: sale.details.reduce((sum, item) => sum + item.quantity, 0),

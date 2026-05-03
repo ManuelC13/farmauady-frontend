@@ -38,10 +38,11 @@ function ProductSearchModal({ isOpen, onClose }) {
             setSearched(true);
             try {
                 const res = await getSaleProductsRequest(term);
-                const mapped = res.data.products.map((p) => ({
+                const pList = Array.isArray(res.data) ? res.data : (res.data?.data || res.data?.products || []);
+                const mapped = pList.map((p) => ({
                     id: p.id_product,
                     name: p.name,
-                    category: p.category_name,
+                    category: p.category_name || p.category?.name || "Sin Categoría",
                     price: parseFloat(p.sale_price),
                     stock: p.stock,
                     minimumStock: p.minimum_stock,

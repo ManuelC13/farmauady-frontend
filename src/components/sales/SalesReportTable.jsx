@@ -31,7 +31,8 @@ function SalesReportTable({
           ...(appliedFilters.category_id && { category_id: appliedFilters.category_id }),
         };
         const { data } = await getFilteredSalesRequest(params);
-        setSales(data);
+        const sList = Array.isArray(data) ? data : (data?.data || []);
+        setSales(sList);
       } catch {
         toast.error("Error al cargar el reporte de ventas");
       } finally {

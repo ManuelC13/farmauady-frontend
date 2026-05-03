@@ -9,7 +9,7 @@ function ProductTable({ products: propProducts, searchTerm = "", categoryFilter 
   const toast = useToast()
 
   useEffect(() => {
-    if (propProducts && propProducts.length > 0) {
+    if (propProducts !== undefined && propProducts !== null) {
       setProducts(propProducts);
       setLoading(false);
       return;
@@ -20,7 +20,7 @@ function ProductTable({ products: propProducts, searchTerm = "", categoryFilter 
         setLoading(true);
         const { data } = await getProductsRequest();
         
-        const productList = Array.isArray(data) ? data : (data?.products || []);
+        const productList = Array.isArray(data) ? data : (data?.data || data?.products || []);
 
         const mappedProducts = productList.map(p => {
           let statusStr = "Disponible";

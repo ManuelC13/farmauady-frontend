@@ -1,10 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/layout/Sidebar";
 import Navbar from "../../components/layout/Navbar";
 import ProductTable from "../../components/product/ProductTable";
+import Pagination from "../../components/layout/Pagination";
 import { ListFilter, Search, ChevronDown, Loader2 } from "lucide-react";
 import { getProductsRequest, getCategoriesRequest } from "../../api/product/product_routes";
 import { useToast } from "../../context/ToastContext";
+
+const LIMIT = 10;
 
 function Products() {
   const toast = useToast();
@@ -16,22 +19,44 @@ function Products() {
   // Fetch productos y categorias
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Búsqueda y filtros
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("Todos");
+  const [statusOpen, setStatusOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const catRes = await getCategoriesRequest();
+        const cats = Array.isArray(catRes.data) ? catRes.data : (catRes.data?.data || []);
+        setCategories(["Todas", ...cats.map(c => c.name)]);
+      } catch (err) {
+        console.error("Error cats:", err);
+      }
+    };
+    fetchCats();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [catRes, prodRes] = await Promise.all([
-          getCategoriesRequest(),
-          getProductsRequest()
-        ]);
+        const prodRes = await getProductsRequest(page, LIMIT, {
+          search: searchTerm,
+          category: selectedCat === "Todas" ? undefined : selectedCat,
+          status: selectedStatus === "Todos" ? undefined : selectedStatus
+        });
         
-        // Categorias
-        const cats = Array.isArray(catRes.data) ? catRes.data : [];
-        setCategories(["Todas", ...cats.map(c => c.name)]);
-
         // Mapeo de productos
-        const pData = Array.isArray(prodRes.data) ? prodRes.data : (prodRes.data?.products || []);
+        const responseData = prodRes.data;
+        const pData = Array.isArray(responseData) ? responseData : (responseData?.data || []);
+        const total = responseData?.total || pData.length;
+        
+        setTotalPages(Math.ceil(total / LIMIT));
+
         const mappedP = pData.map(p => {
           let statusStr = "Disponible";
           if (p.stock === 0) statusStr = "Agotado";
@@ -58,15 +83,14 @@ function Products() {
       }
     };
     fetchData();
-  }, []);
+  }, [page, searchTerm, selectedCat, selectedStatus]);
 
-  // Estados para el estado del producto
-  const [statusOpen, setStatusOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState("Todos");
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, selectedCat, selectedStatus]);
+
   const statusOptions = ["Todos", "Disponible", "Stock crítico", "Agotado"];
 
-  // Búsqueda
-  const [searchTerm, setSearchTerm] = useState("");
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-50">
@@ -165,18 +189,25 @@ function Products() {
             </div>
 
             {/* Tabla */}
-            <div className="flex-1 min-h-0 relative">
-              {loading && (
-                <div className="absolute inset-0 z-20 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center">
-                  <Loader2 className="animate-spin text-blue-500 mb-2" size={32} />
-                  <span className="text-gray-500 font-medium">Cargando catálogo...</span>
-                </div>
-              )}
-              <ProductTable 
-                products={products}
-                searchTerm={searchTerm} 
-                categoryFilter={selectedCat} 
-                statusFilter={selectedStatus} 
+            <div className="flex-1 min-h-0 relative flex flex-col">
+              <div className="flex-1 overflow-hidden relative">
+                {loading && (
+                  <div className="absolute inset-0 z-20 bg-white/50 backdrop-blur-sm flex flex-col items-center justify-center">
+                    <Loader2 className="animate-spin text-blue-500 mb-2" size={32} />
+                    <span className="text-gray-500 font-medium">Cargando catálogo...</span>
+                  </div>
+                )}
+                <ProductTable 
+                  products={products}
+                  searchTerm="" 
+                  categoryFilter="Todas" 
+                  statusFilter="Todos" 
+                />
+              </div>
+              <Pagination 
+                page={page} 
+                totalPages={totalPages} 
+                onPageChange={setPage} 
               />
             </div>
           </div>
