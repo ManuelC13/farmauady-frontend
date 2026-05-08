@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 
 function SalesHistory() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [triggerExport, setTriggerExport] = useState(0);
 
   return (
     <div className="flex">

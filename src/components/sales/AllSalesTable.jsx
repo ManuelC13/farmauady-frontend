@@ -88,7 +88,8 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
         seller_id:   appliedFilters.seller_id   || undefined,
       };
       const { data } = await getFilteredSalesRequest(params);
-      const blob = await SalesReportPDF(data, appliedFilters);
+      const salesArray = Array.isArray(data) ? data : data.data;
+      const blob = await SalesReportPDF(salesArray, appliedFilters);
       if (!blob) return;
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -96,7 +97,8 @@ function AllSalesTable({ searchTerm = "", timeFilter = "" }) {
       a.download = `ventas_${new Date().toISOString().split('T')[0]}.pdf`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
+    } catch (error) {
+      console.log(error);
       toast.error("Error al generar el reporte PDF");
     }
   };
