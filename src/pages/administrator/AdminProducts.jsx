@@ -22,6 +22,7 @@ function AdminProducts() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [isManualExitModalOpen, setIsManualExitModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleFilter = () => {
     const newFilters = {};
@@ -165,9 +166,16 @@ function AdminProducts() {
             <ProductModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              onCreate={createProduct}
-              onUpdate={updateProduct}
+              onCreate={async (payload) => {
+                setSubmitting(true);
+                try { await createProduct(payload); } finally { setSubmitting(false); }
+              }}
+              onUpdate={async (id, payload) => {
+                setSubmitting(true);
+                try { await updateProduct(id, payload); } finally { setSubmitting(false); }
+              }}
               editingProduct={editingProduct}
+              submitting={submitting}
             />
 
             <ConfirmModal

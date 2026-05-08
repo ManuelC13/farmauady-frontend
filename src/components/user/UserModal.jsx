@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { CircleX } from "lucide-react";
+import { CircleX, Loader2 } from "lucide-react";
 import { usePasswordValidation } from "../../hooks/usePasswordValidation";
 
-function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
+function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser, submitting = false }) {
 
   const initialForm = {
     first_name: "",
@@ -106,7 +106,7 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
       await onUpdate(editingUser.id_user, payload);
     }
 
-    onClose();
+    handleClose();
   };
 
   const handleClose = () => {
@@ -294,17 +294,21 @@ function UserModal({ isOpen, onClose, onCreate, onUpdate, editingUser }) {
               <button
                 type="submit"
                 disabled={
+                  submitting ||
                   (!isEditMode && (!isPasswordValid || !passwordsMatch)) ||
                   (isEditMode && form.password && (!isPasswordValid || !passwordsMatch))
                 }
-                className={`w-full py-3 rounded-lg text-white font-semibold text-base transition ${
-                  (!isEditMode && (!isPasswordValid || !passwordsMatch)) ||
+                className={`w-full py-3 rounded-lg text-white font-semibold text-base transition  flex items-center justify-center gap-2 ${
+                  submitting || (!isEditMode && (!isPasswordValid || !passwordsMatch)) ||
                   (isEditMode && form.password && (!isPasswordValid || !passwordsMatch))
                     ? "bg-gray-300 cursor-not-allowed"
                     : "bg-primary hover:bg-secondary cursor-pointer"
                 }`}
               >
-                {isEditMode ? "Actualizar" : "Registrar"}
+                {submitting
+                  ? <><Loader2 size={18} className="animate-spin" /> Procesando...</>
+                  : isEditMode ? "Actualizar" : "Registrar"
+                }
               </button>
             </div>
           </form>

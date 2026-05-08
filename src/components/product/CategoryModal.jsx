@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { CircleX } from "lucide-react";
+import { CircleX, Loader2 } from "lucide-react";
 
-function CategoryModal({ isOpen, onClose, onCreate, onUpdate, editingCategory }) {
+function CategoryModal({ isOpen, onClose, onCreate, onUpdate, editingCategory, submitting = false }) {
   const initialForm = { name: "" };
   const isEditMode = !!editingCategory;
   const [form, setForm] = useState(initialForm);
@@ -40,6 +40,7 @@ function CategoryModal({ isOpen, onClose, onCreate, onUpdate, editingCategory })
     handleClose();
   };
 
+  const isFormValid = form.name.trim() !== "";
   const inputBase = "w-full px-4 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-blue-400";
   const inputEnabled = "border-gray-400 bg-gray-100 placeholder-gray-400";
 
@@ -94,9 +95,16 @@ function CategoryModal({ isOpen, onClose, onCreate, onUpdate, editingCategory })
               </button>
               <button
                 type="submit"
-                className="w-full py-3 rounded-lg bg-primary text-white font-semibold text-base hover:bg-secondary transition cursor-pointer"
+                disabled={submitting || (!isEditMode && !isFormValid)}
+                className={`w-full py-3 rounded-lg text-white font-semibold text-base transition flex items-center justify-center gap-2 ${
+                  submitting || (!isEditMode && !isFormValid) ? "bg-gray-300 cursor-not-allowed" : "bg-primary hover:bg-secondary cursor-pointer"
+                }`}
               >
-                {isEditMode ? "Actualizar" : "Registrar"}
+                {submitting ? (
+                  <><Loader2 size={18} className="animate-spin" /> Procesando...</>
+                ) : (
+                  isEditMode ? "Actualizar" : "Registrar"
+                )}
               </button>
             </div>
           </form>

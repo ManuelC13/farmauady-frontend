@@ -16,6 +16,7 @@ function Users() {
   const [editingUser, setEditingUser] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [deletingUser, setDeletingUser] = useState(null); 
+  const [submitting, setSubmitting] = useState(false);
   const { user: currentUser } = useAuth();
 
 
@@ -90,9 +91,16 @@ function Users() {
             <UserModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              onCreate={createUser}
-              onUpdate={updateUser}
+              onCreate={async (payload) => {
+                setSubmitting(true);
+                try { await createUser(payload); } finally { setSubmitting(false); }
+              }}
+              onUpdate={async (id, payload) => {
+                setSubmitting(true);
+                try { await updateUser(id, payload); } finally { setSubmitting(false); }
+              }}
               editingUser={editingUser}
+              submitting={submitting}
             />
 
             <ConfirmModal

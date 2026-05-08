@@ -15,6 +15,7 @@ function Categories() {
   const [editingCategory, setEditingCategory] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deletingCategory, setDeletingCategory] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const filteredCategories = categories.filter((category) =>
     category.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
@@ -85,9 +86,16 @@ function Categories() {
             <CategoryModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              onCreate={createCategory}
-              onUpdate={updateCategory}
+              onCreate={async (payload) => {
+                setSubmitting(true);
+                try { await createCategory(payload); } finally { setSubmitting(false); }
+              }}
+              onUpdate={async (id, payload) => {
+                setSubmitting(true);
+                try { await updateCategory(id, payload); } finally { setSubmitting(false); }
+              }}
               editingCategory={editingCategory}
+              submitting={submitting}
             />
 
             <ConfirmModal
