@@ -3,6 +3,7 @@ import Sidebar from "../../components/layout/Sidebar";
 import Navbar from "../../components/layout/Navbar";
 import { getDashboardSummaryRequest, getDashboardChartRequest } from "../../api/user/admin_dashboard_routes";
 import { useToast } from "../../context/ToastContext";
+import { usePresence } from "../../hooks/usePresence";
 import { DollarSign, PackageCheck, AlertTriangle, UserCheck, ChevronDown } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid,
@@ -51,6 +52,7 @@ function Dashboard() {
   const [periodOpen, setPeriodOpen] = useState(false);
   const [loading, setLoading]       = useState(true);
   const toast = useToast();
+  const { onlineCount } = usePresence();
 
   useEffect(() => {
     const loadSummary = async () => {
@@ -114,8 +116,8 @@ function Dashboard() {
               iconColor="text-red-500"
             />
             <SummaryCard
-              title="Usuarios activos"
-              value={summary ? summary.active_users : "—"}
+              title="Usuarios conectados"
+              value={onlineCount}
               icon={UserCheck}
               iconColor="text-purple-500"
             />
