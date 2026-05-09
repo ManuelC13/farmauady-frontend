@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useProducts } from "../../hooks/useProducts";
 import { useCategories } from "../../hooks/useCategories";
+import { useToast } from "../../context/ToastContext";
+import { getMovementsReportRequest } from "../../api/product/inventory_routes";
+import { ManualMovementsReportPDF } from "../../components/pdf/ManualMovementsReportPDF";
 import Sidebar from "../../components/layout/Sidebar";
 import Navbar from "../../components/layout/Navbar";
 import ProductTable2 from "../../components/product/ProductTable2";
@@ -8,7 +11,7 @@ import ProductModal from "../../components/product/ProductModal";
 import ConfirmModal from "../../components/common/modals/ConfirmModal";
 import ManualExitModal from "../../components/inventory/ManualExitModal";
 import Pagination from "../../components/layout/Pagination";
-import { Plus, Search, ArrowDownRight, FileDown, Filter } from "lucide-react";
+import { Plus, Search, ArrowDownRight, FileDown, ChevronDown, Filter } from "lucide-react";
 
 function AdminProducts() {
   const { products, page, totalPages, setPage, applyFilters, exportPDF, createProduct, updateProduct, deleteProduct } = useProducts();
@@ -23,6 +26,38 @@ function AdminProducts() {
   const [deletingProduct, setDeletingProduct] = useState(null);
   const [isManualExitModalOpen, setIsManualExitModalOpen] = useState(false);
   const [submitting, setSubmitting]           = useState(false);
+
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef(null);
+  const toast = useToast();
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(e.target)) {
+        setExportMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleExportMovements = async () => {
+    setExportMenuOpen(false);
+    try {
+      const { data } = await getMovementsReportRequest();
+      const blob = await ManualMovementsReportPDF(data);
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `salidas_${new Date().toISOString().split('T')[0]}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error al generar el reporte de salidas");
+    }
+  };
 
   const handleFilter = () => {
     const newFilters = {};
@@ -69,12 +104,34 @@ function AdminProducts() {
             </div>
             {/* Botones */}
             <div className="flex items-center gap-3">
-              <button
-                onClick={exportPDF}
-                className="border border-blue-400 bg-white text-primary px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 whitespace-nowrap text-sm font-medium hover:bg-gray-100 transition"
-              >
-                <FileDown size={20} /> Exportar reporte
-              </button>
+              {/* Dropdown exportar */}
+              <div className="relative" ref={exportMenuRef}>
+                <button
+                  onClick={() => setExportMenuOpen(!exportMenuOpen)}
+                  className="border border-blue-400 bg-white text-primary px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 whitespace-nowrap text-sm font-medium hover:bg-gray-100 transition"
+                >
+                  <FileDown size={20} />
+                  Descargar reporte
+                  <ChevronDown size={16} className={`transition-transform ${exportMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {exportMenuOpen && (
+                  <div className="absolute left-0 mt-2 w-56 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                    <button
+                      onClick={() => { exportPDF(); setExportMenuOpen(false); }}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center gap-2"
+                    >
+                      Reporte de productos
+                    </button>
+                    <button
+                      onClick={handleExportMovements}
+                      className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition flex items-center gap-2 border-t border-gray-100"
+                    >
+                      Reporte de salidas manuales
+                    </button>
+                  </div>
+                )}
+              </div>
               <button
                 onClick={() => setIsManualExitModalOpen(true)}
                 className="border border-blue-400 bg-white text-primary px-4 py-2 rounded-lg cursor-pointer flex items-center gap-2 whitespace-nowrap text-sm font-medium hover:bg-gray-100 transition"

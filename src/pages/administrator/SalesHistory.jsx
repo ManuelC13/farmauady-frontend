@@ -58,7 +58,7 @@ function SalesHistory() {
               onClick={() => setTriggerExport(n => n + 1)}
               className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-secondary transition cursor-pointer"
             >
-              <FileDown size={20} /> Exportar reporte de ventas
+              <FileDown size={20} /> Descargar reporte de ventas
             </button>
           </div>
 
