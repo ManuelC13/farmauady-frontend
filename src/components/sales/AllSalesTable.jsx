@@ -1,9 +1,12 @@
-import { Printer, Banknote, CreditCard, Loader2, Info } from "lucide-react";
+import { Printer, Banknote, CreditCard, Loader2, Info, Eye } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getAllSalesAdminRequest, getFilteredSalesRequest } from "../../api/sales/sales_routes";
 import { useToast } from "../../context/ToastContext";
 import Pagination from "../layout/Pagination";
 import { SalesReportPDF } from "../pdf/SalesReportPDF";
+import SaleDetailModal from "../sales/SaleDetailModal";
+
+import { generateTicketPDF } from "../pdf/TicketPDF";
 import { parseUtcDate } from "../../utils/dateUtils";
 
 const LIMIT = 10;
@@ -11,6 +14,7 @@ const LIMIT = 10;
 function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0 }) {
   const [sales, setSales]           = useState([]);
   const [loading, setLoading]       = useState(true);
+  const [selectedSale, setSelectedSale] = useState(null);
   const [page, setPage]             = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const toast = useToast();
@@ -87,13 +91,34 @@ function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0
     return true;
   });
 
+  const handleDownloadTicket = async (sale) => {
+    if (!sale.rawSale) {
+      toast.error("No se encontraron los detalles de esta venta.");
+      return;
+    }
+    try {
+      const blob = await generateTicketPDF(sale.rawSale);
+      if (!blob) throw new Error();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Ticket_${sale.id}.pdf`;
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Ticket #${sale.id} descargado correctamente`);
+    } catch {
+      toast.error("No se pudo generar el ticket. Intenta de nuevo.");
+    }
+  };
+
   return (
+    <>
     <div className="bg-background rounded-xl border border-gray-300 shadow flex flex-col">
 
       <div className="overflow-auto max-h-[500px] rounded-xl">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-lightBlue border-b border-blue-100 sticky top-0 z-10"> {/* header fijo */}
+            <tr className="bg-lightBlue border-b border-blue-100 sticky top-0 z-10">
               {["ID de venta", "Vendedor", "Fecha y hora", "Artículos", "Total", "Método de pago", "Acciones"].map((col) => (
                 <th key={col} className="py-4 px-6 text-titleBlue font-semibold text-xs uppercase tracking-wider">
                   {col}
@@ -130,10 +155,24 @@ function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0
                       <span className="font-medium">{sale.method}</span>
                     </div>
                   </td>
+
                   <td className="py-4 px-6 text-center">
-                    <button className="p-2 hover:bg-secondary/10 rounded-lg transition-colors inline-flex items-center justify-center">
-                      <Printer size={24} className="text-primary" />
-                    </button>
+                    <div className="flex items-center justify-center gap-1">
+                      <button
+                        onClick={() => setSelectedSale(sale.rawSale)}
+                        title="Ver detalle de venta"
+                        className="p-2 hover:bg-secondary/10 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
+                      >
+                        <Eye size={22} className="text-black" />
+                      </button>
+                      <button
+                        onClick={() => handleDownloadTicket(sale)}
+                        title="Imprimir ticket"
+                        className="p-2 hover:bg-secondary/10 rounded-lg transition-colors inline-flex items-center justify-center cursor-pointer"
+                      >
+                        <Printer size={22} className="text-primary" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -153,6 +192,14 @@ function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0
 
       <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
     </div>
+
+    {selectedSale && (
+      <SaleDetailModal
+        sale={selectedSale}
+        onClose={() => setSelectedSale(null)}
+      />
+    )}
+    </>
   );
 }
 

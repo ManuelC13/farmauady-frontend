@@ -94,14 +94,14 @@ function ProductTable({ products, onEdit, onDelete }) {
                       className="p-2 rounded-lg hover:bg-secondary/10 text-primary transition cursor-pointer"
                       title="Editar producto"
                     >
-                      <SquarePen size={24} />
+                      <SquarePen size={22} />
                     </button>
                     <button
                       onClick={() => onDelete(product)}
                       className="p-2 rounded-lg hover:bg-danger/10 text-danger transition cursor-pointer"
                       title="Eliminar producto"
                     >
-                      <Trash2 size={24} />
+                      <Trash2 size={22} />
                     </button>
                   </td>
 

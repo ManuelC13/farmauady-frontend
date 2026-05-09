@@ -102,7 +102,7 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
                       }`}
                       title={!canEdit ? "No tienes permisos para editar este usuario" : "Editar usuario"}
                     >
-                      <SquarePen size={24} />
+                      <SquarePen size={22} />
                     </button>
                     <button
                       onClick={() => onDelete(user)}
@@ -118,7 +118,7 @@ function UserTable({ users, onEdit, onDelete, currentUser }) {
                           : "Eliminar usuario"
                       }
                     >
-                      <Trash2 size={24} />
+                      <Trash2 size={22} />
                     </button>
                   </td>
 
