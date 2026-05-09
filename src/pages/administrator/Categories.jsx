@@ -48,15 +48,15 @@ function Categories() {
       <div className="flex-1 bg-background min-h-screen">
         <Navbar />
 
-        <div className="p-6 px-15 pt-10">
-          <h1 className="text-2xl font-bold mt-2 mb-3">
+        <div className="p-6 px-10 pt-10">
+          <h1 className="text-3xl font-bold mt-2 mb-2">
             Categorías de producto
           </h1>
           <p className="text-sm text-gray-400 mb-6">
             Categorías para la clasificación de los productos.
           </p>
 
-          <div className="rounded-xl shadow border border-gray-300 my-10">
+          <div className="rounded-xl shadow border border-gray-300 my-5">
             <div className="flex items-center justify-between gap-4 bg-lightBlue p-6 rounded-t-xl">
 
               {/* Barra de búsqueda */}

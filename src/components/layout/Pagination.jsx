@@ -4,7 +4,7 @@ function Pagination({ page, totalPages, onPageChange }) {
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-white rounded-b-xl">
+    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-background rounded-b-xl">
       <p className="text-sm text-gray-500">
         Página <span className="font-semibold text-gray-700">{page}</span> de{" "}
         <span className="font-semibold text-gray-700">{totalPages}</span>
