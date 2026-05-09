@@ -16,6 +16,7 @@ function Users() {
   const [editingUser, setEditingUser] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [deletingUser, setDeletingUser] = useState(null); 
+  const [submitting, setSubmitting] = useState(false);
   const { user: currentUser } = useAuth();
 
 
@@ -54,15 +55,15 @@ function Users() {
       <div className="flex-1 bg-background min-h-screen">
         <Navbar />
 
-        <div className="p-6 px-15 pt-10">
-          <h1 className="text-2xl font-bold mt-2 mb-3">
+        <div className="p-6 px-10 pt-10">
+          <h1 className="text-3xl font-bold mt-2 mb-1">
             Gestión de usuarios
           </h1>
           <p className="text-sm text-gray-400 mb-6">
             Control de personal y acceso al sistema FarmaUady.
           </p>
 
-          <div className="rounded-xl shadow border border-gray-300 my-10"> 
+          <div className="rounded-xl shadow border border-gray-300 my-5"> 
             <div className="flex items-center justify-between gap-4 bg-lightBlue p-6 rounded-t-xl">
               {/* Barra de búsqueda */}
               <div className="relative w-full max-w-md">
@@ -90,9 +91,16 @@ function Users() {
             <UserModal
               isOpen={isModalOpen}
               onClose={handleCloseModal}
-              onCreate={createUser}
-              onUpdate={updateUser}
+              onCreate={async (payload) => {
+                setSubmitting(true);
+                try { await createUser(payload); } finally { setSubmitting(false); }
+              }}
+              onUpdate={async (id, payload) => {
+                setSubmitting(true);
+                try { await updateUser(id, payload); } finally { setSubmitting(false); }
+              }}
               editingUser={editingUser}
+              submitting={submitting}
             />
 
             <ConfirmModal

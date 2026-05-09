@@ -15,7 +15,6 @@ function Navbar() {
     "/inventory": "Inventario de productos",
     "/categories": "Categorías",
     "/sales": "Historial de ventas",
-    "/reports": "Reportes"
   };
 
   const page = routes[location.pathname] || "";

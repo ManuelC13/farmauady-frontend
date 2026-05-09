@@ -13,6 +13,7 @@
   --color-background: #F5F5F5;
   --color-info: #3B82F6;
   --color-lightBlue: #E6F2FF;
+  --color-titleBlue: #A0C4FF;
 
   /* Animaciones para el toast */
   --animate-toast-in: toast-slide-in 0.35s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;

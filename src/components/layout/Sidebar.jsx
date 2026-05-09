@@ -35,7 +35,6 @@ function Sidebar() {
     { name: "Gestión de inventario", path: "/inventory",              icon: Archive,          roles: ["Administrador"] },
     { name: "Categorías",            path: "/categories",             icon: Tags,             roles: ["Administrador"]},
     { name: "Historial de ventas",   path: "/sales",                  icon: BadgeDollarSign,  roles: ["Administrador"] },
-    { name: "Reportes",              path: "/reports",                icon: TrendingUp,       roles: ["Administrador"] },
     { name: "Dashboard",             path: "/vendedor/dashboard",     icon: LayoutGrid,       roles: ["Vendedor"] },
     { name: "Nueva venta",           path: "/vendedor/new-sale",      icon: BadgeDollarSign,  roles: ["Vendedor"] },
     { name: "Registro de ventas",    path: "/vendedor/register-sale", icon: Receipt,          roles: ["Vendedor"] },
