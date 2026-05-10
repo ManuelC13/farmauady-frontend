@@ -45,7 +45,7 @@ function Sidebar() {
 
   return (
   <>
-    <div className="w-64 h-screen bg-primary text-white flex flex-col justify-between">
+    <div className="w-64 h-screen bg-primary text-white flex flex-col justify-between sticky top-0">
       
       {/* Top */}
       <div>

@@ -48,7 +48,7 @@ function Categories() {
       <div className="flex-1 bg-background min-h-screen">
         <Navbar />
 
-        <div className="p-6 px-10 pt-10">
+        <div className="p-6 px-10 pt-7">
           <h1 className="text-3xl font-bold mt-2 mb-2">
             Categorías de producto
           </h1>
