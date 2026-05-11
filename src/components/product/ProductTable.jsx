@@ -27,7 +27,7 @@ function ProductTable({ products: propProducts, searchTerm = "", categoryFilter 
           if (p.stock === 0) {
             statusStr = "Agotado";
           } else if (p.stock <= p.minimum_stock) {
-            statusStr = "Stock crítico";
+            statusStr = "Stock bajo";
           }
           
           return {
@@ -78,7 +78,7 @@ function ProductTable({ products: propProducts, searchTerm = "", categoryFilter 
     switch (status) {
       case "Disponible":
         return "bg-green-100 text-green-700";
-      case "Stock crítico":
+      case "Stock bajo":
         return "bg-yellow-100 text-yellow-700";
       case "Agotado":
         return "bg-red-100 text-red-700";
