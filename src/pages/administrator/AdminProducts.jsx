@@ -14,7 +14,7 @@ import Pagination from "../../components/layout/Pagination";
 import { Plus, Search, ArrowDownRight, FileDown, ChevronDown, Filter } from "lucide-react";
 
 function AdminProducts() {
-  const { products, page, totalPages, setPage, applyFilters, exportPDF, createProduct, updateProduct, deleteProduct } = useProducts();
+  const { products, page, totalPages, setPage, applyFilters, applySearch, exportPDF, createProduct, updateProduct, deleteProduct } = useProducts();
   const { categories } = useCategories();
 
   const [searchQuery, setSearchQuery]         = useState("");
@@ -41,10 +41,21 @@ function AdminProducts() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => applySearch(searchQuery), 400);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
   const handleExportMovements = async () => {
     setExportMenuOpen(false);
     try {
       const { data } = await getMovementsReportRequest();
+
+      if (!data || data.length === 0) {
+        toast.warning("No hay movimientos de salida registrados para generar el reporte.");
+        return;
+      }
+
       const blob = await ManualMovementsReportPDF(data);
       if (!blob) return;
       const url = URL.createObjectURL(blob);
@@ -210,7 +221,7 @@ function AdminProducts() {
           {/* Tabla */}
           <div className="rounded-xl shadow border border-gray-300">
             <ProductTable2
-              products={filteredProducts}
+              products={products}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />
@@ -244,7 +255,6 @@ function AdminProducts() {
           <ManualExitModal
             isOpen={isManualExitModalOpen}
             onClose={() => setIsManualExitModalOpen(false)}
-            products={products}
           />
         </div>
       </div>

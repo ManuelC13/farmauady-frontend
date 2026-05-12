@@ -4,6 +4,9 @@ import { api } from "../axios";
 export const getSaleProductsRequest = (search = "", cart_session_id = null, only_available = false) =>
     api.get("/products/sale", { params: { search, cart_session_id, only_available } });
 
+export const getActiveProductsRequest = () =>
+    api.get("/products/active");
+
 export const getProductsRequest = (page = 1, limit = 10, filters = {}) =>
     api.get("/products/", { params: { page, limit, ...filters } });
 

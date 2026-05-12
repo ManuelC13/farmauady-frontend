@@ -5,8 +5,11 @@ export const getAllCategoriesRequest = () =>
     api.get("/categories/");
 
 // Para la tabla — con paginación
-export const getCategoriesRequest = (page = 1, limit = 10) =>
-    api.get("/categories/", { params: { page, limit } });
+/*export const getCategoriesRequest = (page = 1, limit = 10) =>
+    api.get("/categories/", { params: { page, limit } });*/
+
+export const getCategoriesRequest = (page = 1, limit = 10, search = "") =>
+    api.get("/categories/", { params: { page, limit, ...(search && { search }) } });
 
 export const createCategoryRequest = (data) =>
     api.post("/categories/", data);

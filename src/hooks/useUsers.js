@@ -13,15 +13,29 @@ export function useUsers() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
   const toast = useToast();
 
-  const loadUsers = async (p = page) => {
+  /*const loadUsers = async (p = page) => {
     const res = await getUsersRequest(p, LIMIT);
+    setUsers(res.data.data);
+    setTotalPages(Math.ceil(res.data.total / LIMIT));
+  };*/
+
+  const loadUsers = async (p = page, s = search) => {
+    const res = await getUsersRequest(p, LIMIT, s);
     setUsers(res.data.data);
     setTotalPages(Math.ceil(res.data.total / LIMIT));
   };
 
-  useEffect(() => { loadUsers(); }, [page]);
+  /*useEffect(() => { loadUsers(); }, [page]);*/
+
+  useEffect(() => { loadUsers(); }, [page, search]);
+
+  const applySearch = (term) => {
+    setSearch(term);
+    setPage(1);
+  };
 
   const createUser = async (data) => {
     try {
@@ -56,5 +70,5 @@ export function useUsers() {
     }
   };
 
-  return { users, page, totalPages, setPage, createUser, deleteUser, updateUser };
+  return { users, page, totalPages, setPage, applySearch, createUser, deleteUser, updateUser };
 }

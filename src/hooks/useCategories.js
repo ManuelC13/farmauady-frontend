@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useToast } from "../context/ToastContext"
+import { useToast } from "../context/ToastContext";
 import {
     getCategoriesRequest,
     createCategoryRequest,
@@ -11,17 +11,23 @@ const LIMIT = 10;
 
 export function useCategories() {
     const [categories, setCategories] = useState([]);
-    const [page, setPage]         = useState(1);
+    const [page, setPage]             = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const [search, setSearch]         = useState("");
     const toast = useToast();
 
-    const loadCategories = async (p = page) => {
-        const res = await getCategoriesRequest(p, LIMIT);
+    const loadCategories = async (p = page, s = search) => {
+        const res = await getCategoriesRequest(p, LIMIT, s);
         setCategories(res.data.data);
         setTotalPages(Math.ceil(res.data.total / LIMIT));
     };
 
-    useEffect(() => { loadCategories(); }, [page]);
+    useEffect(() => { loadCategories(); }, [page, search]);
+
+    const applySearch = (term) => {
+        setSearch(term);
+        setPage(1);
+    };
 
     const createCategory = async (data) => {
         try {
@@ -29,8 +35,7 @@ export function useCategories() {
             await loadCategories();
             toast.success("Categoría creada exitosamente");
         } catch (error) {
-            const message = error.response?.data?.detail || "Error al crear la categoría";
-            toast.error(message);
+            toast.error(error.response?.data?.detail || "Error al crear la categoría");
         }
     };
 
@@ -40,8 +45,7 @@ export function useCategories() {
             await loadCategories();
             toast.success("Categoría actualizada exitosamente");
         } catch (error) {
-            const message = error.response?.data?.detail || "Error al actualizar la categoría";
-            toast.error(message);
+            toast.error(error.response?.data?.detail || "Error al actualizar la categoría");
         }
     };
 
@@ -56,5 +60,5 @@ export function useCategories() {
         }
     };
 
-    return { categories, page, totalPages, setPage, createCategory, updateCategory, deleteCategory };
+    return { categories, page, totalPages, setPage, applySearch, createCategory, updateCategory, deleteCategory };
 }

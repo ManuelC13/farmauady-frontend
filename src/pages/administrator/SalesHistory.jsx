@@ -14,7 +14,7 @@ function SalesHistory() {
   const [appliedFilters, setAppliedFilters] = useState({});
   const [sellers, setSellers]             = useState([]);
 
-  useEffect(() => {
+  /*useEffect(() => {
     const loadSellers = async () => {
       try {
         const { data } = await getSellersRequest();
@@ -22,13 +22,32 @@ function SalesHistory() {
       } catch {}
     };
     loadSellers();
-  }, []);
+  }, []);*/
 
-  const handleFilter = () => {
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setAppliedFilters(prev => ({
+        ...prev,
+        search: searchTerm || undefined,
+      }));
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
+  /*const handleFilter = () => {
     const newFilters = {};
     if (startDate) newFilters.start_date = startDate;
     if (endDate)   newFilters.end_date   = endDate;
     if (sellerId)  newFilters.seller_id  = sellerId;
+    setAppliedFilters(newFilters);
+  };*/
+
+  const handleFilter = () => {
+    const newFilters = {};
+    if (startDate)  newFilters.start_date = startDate;
+    if (endDate)    newFilters.end_date   = endDate;
+    if (sellerId)   newFilters.seller_id  = sellerId;
+    if (searchTerm) newFilters.search     = searchTerm;
     setAppliedFilters(newFilters);
   };
 

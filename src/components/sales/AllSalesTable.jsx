@@ -83,13 +83,13 @@ function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0
     }
   };
 
-  const displaySales = sales.filter((sale) => {
+  /*const displaySales = sales.filter((sale) => {
     const query = searchTerm.toLowerCase().trim();
     if (query && !sale.id.toLowerCase().includes(query) && !sale.seller.toLowerCase().includes(query)) {
       return false;
     }
     return true;
-  });
+  });*/
 
   const handleDownloadTicket = async (sale) => {
     if (!sale.rawSale) {
@@ -137,8 +137,8 @@ function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0
                   </div>
                 </td>
               </tr>
-            ) : displaySales.length > 0 ? (
-              displaySales.map((sale, index) => (
+            ) : sales.length > 0 ? (
+              sales.map((sale, index) => (
                 <tr key={index} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-6 text-sm font-medium text-gray-800">{sale.id}</td>
                   <td className="py-4 px-6 text-sm text-gray-800 font-medium">{sale.seller}</td>

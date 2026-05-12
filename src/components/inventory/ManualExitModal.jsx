@@ -1,6 +1,7 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import { createManualExitRequest } from "../../api/product/inventory_routes";
+import { getActiveProductsRequest } from "../../api/product/product_routes";
 
 const MOTIVOS = [
   { label: "Daño",       value: "SALIDA"     },
@@ -15,23 +16,38 @@ const initialForm = {
   observaciones: "",
 };
 
-function ManualExitModal({ isOpen, onClose, products }) {
+function ManualExitModal({ isOpen, onClose}) {
   const [form, setForm] = useState(initialForm);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [allProducts, setAllProducts] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await getActiveProductsRequest();
+        setAllProducts(data);
+      } catch {
+        toast.error("Error al cargar los productos");
+      }
+    };
+    load();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
-    if (!query) return products;
-    return products.filter(
-      (p) =>
+    return allProducts.filter((p) => {
+      if (p.stock <= 0) return false;
+      if (!query) return true;
+      return (
         p.name.toLowerCase().includes(query) ||
         p.sku.toLowerCase().includes(query)
-    );
-  }, [products, searchQuery]);
+      );
+    });
+  }, [allProducts, searchQuery]);
 
-  const selectedProduct = products.find(
+  const selectedProduct = allProducts.find(
     (p) => p.id_product === Number(form.id_product)
   );
 
@@ -116,7 +132,8 @@ function ManualExitModal({ isOpen, onClose, products }) {
                 name="id_product"
                 value={form.id_product}
                 onChange={handleChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 max-h-48 overflow-y-auto"
+                size={1}
               >
                 <option value="">Seleccione un producto</option>
                 {filteredProducts.map((p) => (

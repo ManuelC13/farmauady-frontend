@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useUsers } from "../../hooks/useUsers";
 import Sidebar from "../../components/layout/Sidebar";
@@ -10,7 +10,7 @@ import Pagination from "../../components/layout/Pagination";
 import { Plus, Search } from "lucide-react";
 
 function Users() {
-  const { users, page, totalPages, setPage, createUser, deleteUser, updateUser } = useUsers();
+  const { users, page, totalPages, setPage, applySearch, createUser, deleteUser, updateUser } = useUsers();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
@@ -21,12 +21,17 @@ function Users() {
 
 
   // Filtrado local de usuarios
-  const filteredUsers = users.filter((user) => {
+  /*const filteredUsers = users.filter((user) => {
     const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
     const email = user.email?.toLowerCase();
     const query = searchQuery.toLowerCase().trim();
     return fullName.includes(query) || email.includes(query);
-  });
+  });*/
+
+  useEffect(() => {
+    const timeout = setTimeout(() => applySearch(searchQuery), 400);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const editUser = (user) => {
     setEditingUser(user);
@@ -113,7 +118,7 @@ function Users() {
             />
 
             <UserTable
-              users={filteredUsers}
+              users={users}
               onEdit={editUser}
               onDelete={handleDeleteClick}
               currentUser={currentUser}

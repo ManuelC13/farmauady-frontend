@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCategories } from "../../hooks/useCategories";
 import Sidebar from "../../components/layout/Sidebar";
 import Navbar from "../../components/layout/Navbar";
@@ -9,7 +9,7 @@ import Pagination from "../../components/layout/Pagination";
 import { Plus, Search } from "lucide-react";
 
 function Categories() {
-  const { categories, page, totalPages, setPage, createCategory, updateCategory, deleteCategory } = useCategories();
+  const { categories, page, totalPages, setPage, applySearch, createCategory, updateCategory, deleteCategory } = useCategories();
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
@@ -17,9 +17,10 @@ function Categories() {
   const [deletingCategory, setDeletingCategory] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase().trim())
-  );
+  useEffect(() => {
+    const timeout = setTimeout(() => applySearch(searchQuery), 400);
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const handleEditClick = (category) => {
     setEditingCategory(category);
@@ -108,7 +109,7 @@ function Categories() {
             />
 
             <CategoryTable
-              categories={filteredCategories}
+              categories={categories}
               onEdit={handleEditClick}
               onDelete={handleDeleteClick}
             />

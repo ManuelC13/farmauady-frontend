@@ -31,6 +31,11 @@ export function useProducts() {
     setPage(1);
   };
 
+  const applySearch = (term) => {
+    setFilters(prev => ({ ...prev, search: term || undefined }));
+    setPage(1);
+  };
+
   const exportPDF = async () => {
     try {
       const res = await getInventoryReportRequest(filters);
@@ -80,5 +85,5 @@ export function useProducts() {
     }
   }
 
-  return { products, page, totalPages, setPage, applyFilters, exportPDF, createProduct, updateProduct, deleteProduct };
+  return { products, page, totalPages, setPage, applyFilters, applySearch, exportPDF, createProduct, updateProduct, deleteProduct };
 }
