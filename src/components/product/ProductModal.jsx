@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CircleX, Loader2 } from "lucide-react";
-import { useCategoriesAll } from "../../hooks/useCategoriesAll";
+import { getAllActiveCategoriesRequest } from "../../api/product/category_routes";
 
 function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct, submitting = false }) {
 
@@ -17,7 +17,19 @@ function ProductModal({ isOpen, onClose, onCreate, onUpdate, editingProduct, sub
 
   const isEditMode = !!editingProduct;
   const [form, setForm] = useState(initialForm);
-  const { categories } = useCategoriesAll();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await getAllActiveCategoriesRequest();
+        setCategories(data);
+      } catch {
+        // silencioso
+      }
+    };
+    load();
+  }, []);
 
   useEffect(() => {
     if (editingProduct) {
