@@ -66,14 +66,15 @@ export async function InventoryReportPDF(products) {
   const fecha = now.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
   const hora  = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: true });
   const totalProductos  = products.length;
-  const stockCritico    = products.filter(p => p.stock <= p.minimum_stock).length;
 
   const blockW = CW / 4;
+  const stockCritico    = products.filter(p => p.stock <= p.minimum_stock).length;
+
   const blocks = [
     { label: 'FECHA DE GENERACIÓN', value: fecha },
     { label: 'HORA',                value: hora },
     { label: 'TOTAL PRODUCTOS',     value: String(totalProductos) },
-    { label: 'STOCK CRÍTICO',       value: String(stockCritico), color: stockCritico > 0 ? C.yellow : C.green },
+    { label: 'STOCK BAJO',          value: String(stockCritico), color: stockCritico > 0 ? C.yellow : C.green },
   ];
 
   blocks.forEach((b, i) => {
@@ -113,7 +114,7 @@ export async function InventoryReportPDF(products) {
       p.sku,
       '$' + parseFloat(p.sale_price).toFixed(2),
       p.stock,
-      p.stock <= p.minimum_stock ? 'Stock crítico' : 'Disponible',
+      p.stock <= p.minimum_stock ? 'Stock bajo' : 'Disponible',
     ]),
     columnStyles: {
       0: { cellWidth: 'auto' },
@@ -153,7 +154,7 @@ export async function InventoryReportPDF(products) {
         }
         // Color del estado
         if (data.column.index === 5) {
-          const isCritical = data.cell.raw === 'Stock crítico';
+          const isCritical = data.cell.raw === 'Stock bajo';
           data.cell.styles.fontStyle = 'bold';
           data.cell.styles.textColor = isCritical ? C.yellow : C.green;
         }

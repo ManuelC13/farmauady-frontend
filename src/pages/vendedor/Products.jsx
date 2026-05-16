@@ -60,7 +60,7 @@ function Products() {
         const mappedP = pData.map(p => {
           let statusStr = "Disponible";
           if (p.stock === 0) statusStr = "Agotado";
-          else if (p.stock <= p.minimum_stock) statusStr = "Stock crítico";
+          else if (p.stock <= p.minimum_stock) statusStr = "Stock bajo";
           
           return {
             rawId: p.id_product,
@@ -89,7 +89,7 @@ function Products() {
     setPage(1);
   }, [searchTerm, selectedCat, selectedStatus]);
 
-  const statusOptions = ["Todos", "Disponible", "Stock crítico", "Agotado"];
+  const statusOptions = ["Todos", "Disponible", "Stock bajo", "Agotado"];
 
 
   return (
@@ -199,9 +199,9 @@ function Products() {
                 )}
                 <ProductTable 
                   products={products}
-                  searchTerm="" 
-                  categoryFilter="Todas" 
-                  statusFilter="Todos" 
+                  searchTerm={searchTerm}
+                  categoryFilter={selectedCat}
+                  statusFilter={selectedStatus}
                 />
               </div>
               <Pagination 
