@@ -4,6 +4,9 @@ import { api } from "../axios";
 export const getAllCategoriesRequest = () =>
     api.get("/categories/");
 
+export const getAllActiveCategoriesRequest = () =>
+    api.get("/categories/all-active");
+
 // Para la tabla — con paginación
 export const getCategoriesRequest = (page = 1, limit = 10, search = "") =>
     api.get("/categories/", { params: { page, limit, ...(search && { search }) } });

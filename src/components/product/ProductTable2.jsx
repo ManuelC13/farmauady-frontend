@@ -18,7 +18,7 @@ function ProductTable({ products, onEdit, onDelete }) {
           <thead className="sticky top-0 z-10 bg-lightBlue">
             <tr className="border-b border-gray-300">
               <th className="py-4 px-6 text-xs font-semibold text-titleBlue tracking-wider uppercase">Sku</th>
-              <th className="py-4 px-6 text-xs font-semibold text-titleBlue tracking-wider uppercase">Medicamento</th>
+              <th className="py-4 px-6 text-xs font-semibold text-titleBlue tracking-wider uppercase">Nombre</th>
               <th className="py-4 pl-6 pr-2 text-xs font-semibold text-titleBlue tracking-wider uppercase">Categoría</th>
               <th className="py-4 pl-3 pr-6 text-xs font-semibold text-titleBlue tracking-wider uppercase">Precio</th>
               <th className="py-4 px-6 text-xs font-semibold text-titleBlue tracking-wider uppercase">Existencias</th>
@@ -45,7 +45,7 @@ function ProductTable({ products, onEdit, onDelete }) {
                     {product.sku}
                   </td>
 
-                  {/* Medicamento */}
+                  {/* Nombre */}
                   <td className="py-4 px-6 text-sm font-medium text-gray-800">
                     {product.name}
                   </td>
