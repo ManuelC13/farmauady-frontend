@@ -16,19 +16,11 @@ export function useUsers() {
   const [search, setSearch] = useState("");
   const toast = useToast();
 
-  /*const loadUsers = async (p = page) => {
-    const res = await getUsersRequest(p, LIMIT);
-    setUsers(res.data.data);
-    setTotalPages(Math.ceil(res.data.total / LIMIT));
-  };*/
-
   const loadUsers = async (p = page, s = search) => {
     const res = await getUsersRequest(p, LIMIT, s);
     setUsers(res.data.data);
     setTotalPages(Math.ceil(res.data.total / LIMIT));
   };
-
-  /*useEffect(() => { loadUsers(); }, [page]);*/
 
   useEffect(() => { loadUsers(); }, [page, search]);
 

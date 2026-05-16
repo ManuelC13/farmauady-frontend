@@ -83,14 +83,6 @@ function AllSalesTable({ searchTerm = "", appliedFilters = {}, triggerExport = 0
     }
   };
 
-  /*const displaySales = sales.filter((sale) => {
-    const query = searchTerm.toLowerCase().trim();
-    if (query && !sale.id.toLowerCase().includes(query) && !sale.seller.toLowerCase().includes(query)) {
-      return false;
-    }
-    return true;
-  });*/
-
   const handleDownloadTicket = async (sale) => {
     if (!sale.rawSale) {
       toast.error("No se encontraron los detalles de esta venta.");

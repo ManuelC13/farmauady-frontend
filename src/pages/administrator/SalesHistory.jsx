@@ -14,15 +14,6 @@ function SalesHistory() {
   const [appliedFilters, setAppliedFilters] = useState({});
   const [sellers, setSellers]             = useState([]);
 
-  /*useEffect(() => {
-    const loadSellers = async () => {
-      try {
-        const { data } = await getSellersRequest();
-        setSellers(data);
-      } catch {}
-    };
-    loadSellers();
-  }, []);*/
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -33,14 +24,6 @@ function SalesHistory() {
     }, 400);
     return () => clearTimeout(timeout);
   }, [searchTerm]);
-
-  /*const handleFilter = () => {
-    const newFilters = {};
-    if (startDate) newFilters.start_date = startDate;
-    if (endDate)   newFilters.end_date   = endDate;
-    if (sellerId)  newFilters.seller_id  = sellerId;
-    setAppliedFilters(newFilters);
-  };*/
 
   const handleFilter = () => {
     const newFilters = {};

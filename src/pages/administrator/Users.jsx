@@ -20,14 +20,6 @@ function Users() {
   const { user: currentUser } = useAuth();
 
 
-  // Filtrado local de usuarios
-  /*const filteredUsers = users.filter((user) => {
-    const fullName = `${user.first_name} ${user.last_name}`.toLowerCase();
-    const email = user.email?.toLowerCase();
-    const query = searchQuery.toLowerCase().trim();
-    return fullName.includes(query) || email.includes(query);
-  });*/
-
   useEffect(() => {
     const timeout = setTimeout(() => applySearch(searchQuery), 400);
     return () => clearTimeout(timeout);

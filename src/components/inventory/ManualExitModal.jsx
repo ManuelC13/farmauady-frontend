@@ -22,6 +22,7 @@ function ManualExitModal({ isOpen, onClose}) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [allProducts, setAllProducts] = useState([]);
+  const [showNoResults, setShowNoResults] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -46,6 +47,31 @@ function ManualExitModal({ isOpen, onClose}) {
       );
     });
   }, [allProducts, searchQuery]);
+
+    useEffect(() => {
+      if (!searchQuery) return;
+      
+      const timeout = setTimeout(() => {
+        if (filteredProducts.length === 1) {
+          setForm(prev => ({ ...prev, id_product: String(filteredProducts[0].id_product) }));
+        }
+      }, 500);
+
+      return () => clearTimeout(timeout);
+    }, [searchQuery, filteredProducts]);
+
+  useEffect(() => {
+    if (!searchQuery) {
+      setShowNoResults(false);
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setShowNoResults(filteredProducts.length === 0);
+    }, 400);
+
+    return () => clearTimeout(timeout);
+    }, [searchQuery, filteredProducts]);
 
   const selectedProduct = allProducts.find(
     (p) => p.id_product === Number(form.id_product)
@@ -117,10 +143,20 @@ function ManualExitModal({ isOpen, onClose}) {
               type="text"
               placeholder="Buscar medicamento por nombre o SKU"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setForm(prev => ({ ...prev, id_product: "" }));
+              }}
               className="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-300 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
+
+          {/* Mensaje cuando no hay resultados */}
+          {showNoResults && (
+            <p className="text-sm text-danger bg-danger/20 border border-red rounded-lg px-3 py-2">
+              No se encontró ningún producto disponible con ese nombre o SKU. Verifica que el producto tenga stock disponible.
+            </p>
+          )}
 
           {/* Medicamento + Motivo */}
           <div className="grid grid-cols-2 gap-4">
