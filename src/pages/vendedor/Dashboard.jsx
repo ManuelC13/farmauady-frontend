@@ -35,7 +35,7 @@ function DashboardVendedor() {
     });
 
     actualiDateFormatted =
-        actualiDateFormatted.charAt(0).toUpperCase() +
+        actualiDateFormatted.charAt(0).toLowerCase() +
         actualiDateFormatted.slice(1).replace(",", "");
 
     return (
@@ -55,7 +55,7 @@ function DashboardVendedor() {
                         </h1>
 
                         <p className="mb-8 text-gray-500 font-medium">
-                            Aquí tienes un resumen de tu turno de hoy,{" "}
+                            Aquí tienes un resumen de tus ventas recientes y estadísticas del día,{" "}
                             {actualiDateFormatted}
                         </p>
                     </div>
@@ -91,7 +91,7 @@ function DashboardVendedor() {
                         {/* Sidebar de Resumen */}
                         <div className="lg:col-span-1 flex flex-col h-full">
                             <h2 className="flex-none h-[44px] flex items-center text-gray-400 font-bold text-sm uppercase tracking-wider mb-8">
-                                Resumen
+                                Resumen del día
                             </h2>
 
                             <div className="flex-none space-y-6">
@@ -111,7 +111,7 @@ function DashboardVendedor() {
                                 {/* Card: Artículos vendidos */}
                                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                                     <div>
-                                        <p className="text-gray-400 text-sm font-semibold mb-1">Artículos vendidos</p>
+                                        <p className="text-gray-400 text-sm font-semibold mb-1">Productos vendidos hoy</p>
                                         <p className="text-2xl font-bold text-gray-800">{stats.items_sold}</p>
                                     </div>
                                     <div className="bg-green-50 p-2 rounded-lg">
