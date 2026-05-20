@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useProducts } from "../../hooks/useProducts";
-import { useCategories } from "../../hooks/useCategories";
+import { getAllActiveCategoriesRequest } from "../../api/product/category_routes";
 import { useToast } from "../../context/ToastContext";
 import { getMovementsReportRequest } from "../../api/product/inventory_routes";
 import { ManualMovementsReportPDF } from "../../components/pdf/ManualMovementsReportPDF";
@@ -15,8 +15,8 @@ import { Plus, Search, ArrowDownRight, FileDown, ChevronDown, Filter } from "luc
 
 function AdminProducts() {
   const { products, page, totalPages, setPage, applyFilters, applySearch, exportPDF, createProduct, updateProduct, deleteProduct } = useProducts();
-  const { categories } = useCategories();
 
+  const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery]         = useState("");
   const [categoryFilter, setCategoryFilter]   = useState("");
   const [activeFilter, setActiveFilter]       = useState("");
@@ -45,6 +45,16 @@ function AdminProducts() {
     const timeout = setTimeout(() => applySearch(searchQuery), 400);
     return () => clearTimeout(timeout);
   }, [searchQuery]);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await getAllActiveCategoriesRequest();
+        setCategories(data);
+      } catch {}
+    };
+    load();
+  }, []);
 
   const handleExportMovements = async () => {
     setExportMenuOpen(false);

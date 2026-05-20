@@ -25,6 +25,16 @@ function SalesHistory() {
     return () => clearTimeout(timeout);
   }, [searchTerm]);
 
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const { data } = await getSellersRequest();
+        setSellers(data);
+      } catch {}
+    };
+    load();
+  }, []);
+
   const handleFilter = () => {
     const newFilters = {};
     if (startDate)  newFilters.start_date = startDate;
